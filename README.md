@@ -5,6 +5,7 @@
 ## Contributors:
 * Elizabeth
 * Jon Caviness
+* Howard
 
 ## GitHub and Waffle Workflow
 
