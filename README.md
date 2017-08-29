@@ -5,7 +5,7 @@
 ## Contributors:
 * Elizabeth
 * Jon Caviness
-
+* Howard
 
 [Read more about Waffle workflow.](https://help.waffle.io/automatic-work-tracking/auto-work-tracking-basics/recommended-workflow-using-pull-requests-automatic-work-tracking)
 
