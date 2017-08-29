@@ -2,10 +2,19 @@
 
 [![Stories in Ready](https://badge.waffle.io/ivthefourth/project-1.svg?label=ready&title=Ready)](http://waffle.io/ivthefourth/project-1)
 
-## Contributors:
+
+## Contents
+* [About](#about)
+* [GitHub/Waffle Workflow](#github-and-waffle-workflow)
+
+
+## About
+
+### Contributors:
 * Elizabeth
 * Jon Caviness
 * Howard
+
 
 ## GitHub and Waffle Workflow
 
