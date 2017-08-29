@@ -1,10 +1,11 @@
 # Name TBD
 
-[![Stories in Ready](https://badge.waffle.io/ivthefourth/project-1.svg?label=ready&title=Ready)](http://waffle.io/ivthefourth/project-1)
+[![Stories in Ready](https://badge.waffle.io/ivthefourth/project-1.svg?label=ready&title=Ready)](https://waffle.io/ivthefourth/project-1)
 
 
 ## Contents
 * [About](#about)
+* [Important Links](#important-links)
 * [GitHub/Waffle Workflow](#github-and-waffle-workflow)
 
 
@@ -16,6 +17,21 @@
 * Howard
 
 
+## Important Links
+* [Waffle (Task Manager)](https://waffle.io/ivthefourth/project-1)
+* [Project Proposal](https://docs.google.com/document/d/1MgKZKyFO4m7cpf0CrR8cDIUgZWh9oPvnBqRZu461Bfw/)
+* [Materialize Docs](http://materializecss.com/)
+* [jQuery Docs](https://api.jquery.com/)
+* [RIDB API Docs (recreation.gov)](https://usda.github.io/RIDB/)
+* [Google Places Autocomplete](https://developers.google.com/places/web-service/autocomplete)
+    * [Places](https://developers.google.com/places/web-service/)
+* [Google Directions](https://developers.google.com/maps/documentation/directions/)
+* [Google Maps JS](https://developers.google.com/maps/documentation/javascript/)
+    * [Polylines](https://developers.google.com/maps/documentation/javascript/examples/polyline-simple)
+* [Google Distance Matrix](https://developers.google.com/maps/documentation/distance-matrix/)
+
+
+
 ## GitHub and Waffle Workflow
 
 When Completing a new task:
@@ -23,7 +39,7 @@ When Completing a new task:
     * `git checkout master`
 2. Pull from GitHub so you're up to date
     * `git pull`
-3. Look at items in the **Ready** column (not Backlog) on [Waffle](http://waffle.io/ivthefourth/project-1) and choose a task to work on that is either assigned to you or unassigned. If your choice is unassigned, assign yourself by clicking the user icon at the top right of the task and then selecting yourself
+3. Look at items in the **Ready** column (not Backlog) on [Waffle](https://waffle.io/ivthefourth/project-1) and choose a task to work on that is either assigned to you or unassigned. If your choice is unassigned, assign yourself by clicking the user icon at the top right of the task and then selecting yourself
     * ![Example Task](docs/example-task.png)
 4. Create a branch, and name it starting with the number of the chosen task (top left) followed by a '-' and then a short description 
     * `git branch 31-howard-test`
