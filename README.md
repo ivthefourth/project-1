@@ -25,7 +25,7 @@ When Completing a new task:
 7. When you've completed the task, commit and push the latest changes to GitHub
     * `git commit -m "description"` 
     * `git push`
-8. Once branch is up to date on GitHub, submit a [pull request](https://github.com/ivthefourth/project-1/branches) from your branch, and use the phrase "Closes #n" in the title; this will move the task into the **Under Review** column
+8. Once branch is up to date on GitHub, submit a [pull request on GitHub](https://github.com/ivthefourth/project-1/branches) from your branch, and use the phrase "Closes #n" in the title; this will move the task into the **Under Review** column
     > Closes #31 added howard to contributors
 9. You can start working on another task (return to step 1) until code is reviewed
 10. If a review shows that changes need to be made before the branch can merge, make those changes on the appropriate branch (31-howard-test in this case), then commit and push again. You don't have to open another pull request. You can click the pull request icon on a task (bottom left) in the **Under Review** column on Waffle to view the pull request in GitHub.
