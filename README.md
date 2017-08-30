@@ -23,12 +23,13 @@
 * [Materialize Docs](http://materializecss.com/)
 * [jQuery Docs](https://api.jquery.com/)
 * [RIDB API Docs (recreation.gov)](https://usda.github.io/RIDB/)
-* [Google Places Autocomplete](https://developers.google.com/places/web-service/autocomplete)
-    * [Places](https://developers.google.com/places/web-service/)
-* [Google Directions](https://developers.google.com/maps/documentation/directions/)
+* [Google Places Autocomplete](https://developers.google.com/maps/documentation/javascript/places-autocomplete)
+    * [Places](https://developers.google.com/maps/documentation/javascript/places)
+* [Google Directions](https://developers.google.com/maps/documentation/javascript/directions)
 * [Google Maps JS](https://developers.google.com/maps/documentation/javascript/)
     * [Polylines](https://developers.google.com/maps/documentation/javascript/examples/polyline-simple)
-* [Google Distance Matrix](https://developers.google.com/maps/documentation/distance-matrix/)
+* [Google Distance Matrix](https://developers.google.com/maps/documentation/javascript/distancematrix)
+* [webpack](https://webpack.js.org/)
 
 
 
