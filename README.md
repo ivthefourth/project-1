@@ -1,4 +1,4 @@
-# Name TBD
+# Rec Ninja
 
 [![Stories in Ready](https://badge.waffle.io/ivthefourth/project-1.svg?label=ready&title=Ready)](https://waffle.io/ivthefourth/project-1)
 
