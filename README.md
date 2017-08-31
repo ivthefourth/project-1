@@ -7,6 +7,7 @@
 * [About](#about)
 * [Important Links](#important-links)
 * [GitHub/Waffle Workflow](#github-and-waffle-workflow)
+* [Dev Server](#dev-server)
 
 
 ## About
@@ -69,4 +70,9 @@ When Completing a new task:
     * `git branch -d 31-howard-test`
 
 [Read more about Waffle workflow.](https://help.waffle.io/automatic-work-tracking/auto-work-tracking-basics/recommended-workflow-using-pull-requests-automatic-work-tracking)
+
+## Dev Server
+* **Start the server** by opening a new terminal window and entering `npm start`. 
+* Server will be on http://localhost:8080/ with auto-refresh enabled.
+* **Stop the server** by pressing `ctrl` + `C` on the terminal window that is running the server.
 
