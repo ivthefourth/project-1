@@ -23,6 +23,7 @@
 * [Materialize Docs](http://materializecss.com/)
 * [jQuery Docs](https://api.jquery.com/)
 * [RIDB API Docs (recreation.gov)](https://usda.github.io/RIDB/)
+	- API Key: 2C1B2AC69E1945DE815B69BBCC9C7B19
 * [Google Places Autocomplete](https://developers.google.com/maps/documentation/javascript/places-autocomplete)
     * [Places](https://developers.google.com/maps/documentation/javascript/places)
 * [Google Directions](https://developers.google.com/maps/documentation/javascript/directions)
