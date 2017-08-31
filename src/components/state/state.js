@@ -1,4 +1,29 @@
+import {interestList} from '../recreation/recreation';
 
-export default function(){ 
-   $('body').append( $('<h2 class="state">').text('state') )
+/*************\    
+   Interests    
+\*************/
+class Interest{
+   ;
 }
+
+/*************\    
+    Route    
+\*************/
+class Location{
+   ;
+}
+
+
+/*************\    
+      
+\*************/
+class State {
+   constructor(){
+      this.interestList = interestList;
+   }
+}
+
+const state = new State;
+
+export default state;
