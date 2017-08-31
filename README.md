@@ -18,11 +18,19 @@
 
 
 ## Important Links
+
+### Project Info
+* [Milestones](https://github.com/ivthefourth/project-1/milestones)
 * [Waffle (Task Manager)](https://waffle.io/ivthefourth/project-1)
 * [User Stories](https://docs.google.com/document/d/1YPNBCu6e3rBdH7EmJNTHmhsZOrDXebbFNvsH5ubqLFg/)
 * [Project Proposal](https://docs.google.com/document/d/1MgKZKyFO4m7cpf0CrR8cDIUgZWh9oPvnBqRZu461Bfw/)
+
+### Library Docs
 * [Materialize Docs](http://materializecss.com/)
 * [jQuery Docs](https://api.jquery.com/)
+* [webpack](https://webpack.js.org/)
+
+### API Docs
 * [RIDB API Docs (recreation.gov)](https://usda.github.io/RIDB/)
 	- API Key: 2C1B2AC69E1945DE815B69BBCC9C7B19
 * [Google Places Autocomplete](https://developers.google.com/maps/documentation/javascript/places-autocomplete)
@@ -31,7 +39,6 @@
 * [Google Maps JS](https://developers.google.com/maps/documentation/javascript/)
     - [Polylines](https://developers.google.com/maps/documentation/javascript/examples/polyline-simple)
 * [Google Distance Matrix](https://developers.google.com/maps/documentation/javascript/distancematrix)
-* [webpack](https://webpack.js.org/)
 
 
 
