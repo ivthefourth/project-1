@@ -5,7 +5,6 @@ import map from './components/map/map';
 import route from './components/route/route';
 import state from './components/state/state';
 
-recreation();
 interests();
 layout();
 map();

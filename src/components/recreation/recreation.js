@@ -1,6 +1,6 @@
 import './recreation.css';
 
-export var interestList = [
+ export var interestList = [
     {"ActivityName": "BIKING",
      "ActivityID": 5,
      "Emoji": "A"
@@ -43,3 +43,43 @@ export var interestList = [
     }
 
 ]
+
+
+function recApiQuery(latitudeVal,longitudeVal,radiusVal,activityVal) {
+
+    var recQueryURL = "https://ridb.recreation.gov/api/v1/recareas.json?apikey=2C1B2AC69E1945DE815B69BBCC9C7B19&full&latitude="
+    + latitudeVal + "&longitude=" + longitudeVal + "&radius=" + radiusVal + "&activity" + activityVal;
+
+    $.ajax({
+        url: recQueryURL,
+        method: "GET"
+    })
+    .done(function(recdata){
+
+        var recResults = JSON.stringify(recdata);
+        console.log(recdata);
+
+        var str = JSON.stringify(recdata);
+        var RecAreaName = recdata.recdata.[0].RecAreaName;
+        console.log(RecAreaName);
+
+        // for (var i = 0; i <recdata.length; i++) {
+        //
+        //     var recResults = JSON.stringify(recdata);
+        //
+        //     var sugDivClass = $("<div class='suggestionSummary'>");
+        //     var recName = recResults[i].RecAreaName;
+        //     var recNameText = $("<p>").text(recName);
+        //
+        //     sugDivClass.append(recNameText);
+        //     console.log(`${recNameText} goes here `);
+        //
+        //     $("#suggestionsList").append(sugDivClass);
+        //
+        //
+        // }
+
+    });
+}
+
+recApiQuery(40.37578,-105.50896,10,"14,16");
