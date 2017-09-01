@@ -79,12 +79,14 @@ class Interests extends EventObject{
          let interest = new Interest(i);
          interest.on('change', this.emit.bind(this, 'change'));
          return interest;
-      });
+      }.bind(this));
 
       this.makeEvent = this.makeEvent.bind(this);
    }
    get selected(){
-      return this.all.filter();
+      return this.all.filter(function(i){
+         return i.selected;
+      });
    }
    toString(){
       return "state.interests";
@@ -110,12 +112,16 @@ class Location{
 /*************\    
  Overall State
 \*************/
-class State {
+class State extends EventObject{
    constructor(){
+      super(['ready']);
       this.interests = null;
    }
    setInterests(list){
       this.interests = new Interests(list);
+   }
+   makeEvent(){
+      return {val: null};
    }
 }
 
