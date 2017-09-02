@@ -16,6 +16,7 @@
 * Elizabeth
 * Jon Caviness
 * Howard
+* Trevor Nelson
 
 
 ## Important Links
