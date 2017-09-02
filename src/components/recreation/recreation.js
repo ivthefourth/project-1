@@ -1,7 +1,7 @@
 import './recreation.css';
 import state from '../state/state';
 
- export var interestList = [
+var interestList = [
     {"ActivityName": "BIKING",
      "ActivityID": 5,
      "Emoji": "A"
@@ -45,6 +45,7 @@ import state from '../state/state';
 
 ]
 
+state.setInterests(interestList);
 
 function recApiQuery(latitudeVal,longitudeVal,radiusVal,activityVal) {
 
@@ -84,7 +85,7 @@ function recApiQuery(latitudeVal,longitudeVal,radiusVal,activityVal) {
             var recAreaLinkP = $("<p>").append(recAreaLink);
             sugDivClass.append(recNameText, recAreaPhone, recAreaLinkP);
 
-            $("#suggestionsList").append(sugDivClass);
+            $("#filtered").append(sugDivClass);
 
 
         }
