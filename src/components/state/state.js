@@ -257,6 +257,8 @@ class Recreation{
       this.bookmarked = new RecAreaCollection('bookmarked');
       this.addedToRoute = new RecAreaCollection('addedToRoute');
 
+      this.apiCall = null;
+
       //temporary
       this.all.on('change', function(e){this.filtered.setData(e.val)}.bind(this));
 
