@@ -6,3 +6,8 @@
    background: rebeccapurple;
 }
 .selected{color: blue;}
+
+.chip {
+	cursor: pointer;
+	display: block;
+}
