@@ -1,4 +1,5 @@
 import './recreation.css';
+import state from '../state/state';
 
  export var interestList = [
     {"ActivityName": "BIKING",
