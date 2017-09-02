@@ -1,5 +1,3 @@
-import {interestList as list} from '../recreation/recreation';
-
 class EventObject{
    constructor(eventsArr){
       let events = this.events = {};
@@ -105,9 +103,52 @@ class Interests extends EventObject{
      Route    
 \*************/
 class Location{
-   ;
+   constructor(){
+      ;
+   }
 }
 
+class Route{
+   constructor(){
+      ;
+   }
+   toString(){
+      return 'state.route';
+   }
+}
+
+/*************\    
+      Map    
+\*************/
+class Map{
+   constructor(){
+      ;
+   }
+   toString(){
+      return 'state.map';
+   }
+}
+
+/**************\    
+   Recreation    
+\**************/
+class Bookmarks{
+   constructor(){
+      ;
+   }
+}
+
+class Recreation{
+   constructor(){
+      ;
+   }
+   addLocation(){
+      ;
+   }
+   toString(){
+      return 'state.recreation';
+   }
+}
 
 /*************\    
  Overall State
@@ -120,13 +161,20 @@ class State extends EventObject{
    setInterests(list){
       this.interests = new Interests(list);
    }
+   toString(){
+      return 'state';
+   }
    makeEvent(){
       return {val: null};
    }
 }
 
 const STATE = new State;
+
+/* REMOVE: */
+import {interestList as list} from '../recreation/recreation';
 STATE.setInterests(list);
+/*         */
 
 export default STATE;
 
