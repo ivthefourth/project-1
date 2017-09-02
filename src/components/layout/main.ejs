@@ -15,7 +15,7 @@
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
    <!-- Maps API -->
-   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEGAr0lLE7n6g1bEOC2smP7Q-F9ln8b-0"></script>
+   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEGAr0lLE7n6g1bEOC2smP7Q-F9ln8b-0&libraries=places"></script>
 </head>   
 <body>
   <nav>
@@ -31,44 +31,51 @@
       <div class="col s3 m3 l3">
          <ul class="collapsible" data-collapsible="expandable">
              <li>
-               <div class="collapsible-header" id="interests">Interests</div>
-               <div class="collapsible-body">
-                  <div class="input-field col s12">
-                  <select multiple>
-                     <option value="" disabled selected>Choose your option</option>
-                     <option value="1">Option 1</option>
-                     <option value="2">Option 2</option>
-                     <option value="3">Option 3</option>
-                  </select>
-                 </div>
+               <div class="collapsible-header">Interests</div>
+               <div class="collapsible-body" id="interests">
                
-                  <div class="chip chips-autocomplete"> Camping <i class="close material-icons">close</i></div>
-                  <div class="chip chips-autocomplete"> Hiking <i class="close material-icons">close</i></div>
-                  <div class="chip chips-autocomplete"> Fishing <i class="close material-icons">close</i></div>
-                  <div class="chip chips-autocomplete"> Biking <i class="close material-icons">close</i></div>
-                  <div class="chip chips-autocomplete"> Swimming <i class="close material-icons">close</i></div>
-                  <div class="chip chips-autocomplete"> Hunting <i class="close material-icons">close</i></div>
-                  <div class="chip chips-autocomplete"> sleeping <i class="close material-icons">close</i></div>
+                  <!-- <div class="chip"> Camping <i class="close material-icons">close</i></div>
+                  <div class="chip"> Hiking <i class="close material-icons">close</i></div>
+                  <div class="chip"> Fishing <i class="close material-icons">close</i></div>
+                  <div class="chip"> Biking <i class="close material-icons">close</i></div>
+                  <div class="chip"> Swimming <i class="close material-icons">close</i></div>
+                  <div class="chip"> Hunting <i class="close material-icons">close</i></div>
+                  <div class="chip"> sleeping <i class="close material-icons">close</i></div> -->
 
-               </div>
+               <!-- </div> -->
              </li>
              <li>
-               <div class="collapsible-header" id="destinations">Destinations</div>
-               <div class="collapsible-body">
-                  <input type="text" placeholder="Starting Place:">
-                  <input type="text" placeholder="Point A:">
-                   <a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
+               <div class="collapsible-header">Destinations</div>
+               <div class="collapsible-body" id="destinations">
                </div>
-             </li>
-             <li>
-               <div class="collapsible-header" id="suggestions">Suggestions</div>
-               <div class="collapsible-body" id="suggestionsList"></div>
              </li>
            </ul>
       </div>
 
-      <div class="col s9 m9 l9">
+      <div class="col s6 m6 l6">
          <div class="divider section"></div>
+      </div>
+      <div class="row">
+      <div class="col s3 m3 l3">
+         <ul class="collapsible" data-collapsible="expandable">
+             <li>
+               <div class="collapsible-header">Suggestions</div>
+               <div class="collapsible-body" id="suggestions">
+                   <div class="row">
+                     <div class="col s12">
+                        <ul class="tabs">
+                          <li class="tab col s4"><a href="#" class="active">All</a></li>
+                          <li class="tab col s4"><a href="#">Bookmarked</a></li>
+                          <li class="tab col s4"><a href="#">Added to Route</a></li>
+                        </ul>
+                     </div>
+                     <div id="filtered"></div>
+                     <div id="bookmarked"></div>
+                     <div id="added-to-route"></div>
+                  </div>
+               </div>
+             </li>
+         </ul>
       </div>
    </div>
 </body>
