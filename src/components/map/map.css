@@ -1,4 +1,4 @@
 
-.map{
-   background: pink;
+#map{
+   min-height: 90vh;
 }
