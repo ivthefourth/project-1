@@ -28,7 +28,7 @@ class EventObject{
       }
       else{
          let callbacks = this.events[event];
-         let e = this.makeEvent();
+         let e = this.makeEvent(event);
          //execute all callbacks
          callbacks.forEach(function(c){
             c(e);
@@ -103,8 +103,19 @@ class Interests extends EventObject{
      Route    
 \*************/
 class Location{
-   constructor(){
-      ;
+   constructor(object){
+      if( object instanceof RecArea){
+          this.type = 'recarea';
+      }
+      else if(object.hasOwnProperty('place_id')){
+         //google places place... somehow test for google place and 
+         //throw error if neither 
+         this.type = 'place';
+      }
+      else{
+         throw new Error('Provided location is not a PlaceResult or RecArea');
+      }
+      this.data = object;
    }
 }
 
@@ -118,7 +129,7 @@ class Route extends EventObject{
    }
 
    get origin(){
-      return this.path[0];
+      return this.path[0] || null;
    }
    get waypoints(){
       if( this.locationCount < 3){
@@ -138,10 +149,16 @@ class Route extends EventObject{
    }
 
    add(location){
+      if (!(location instanceof Location)){
+         location = new Location(location);
+      }
       this.path.push(location);
       this.emit('change');
    }
    insert(location, index){
+      if (!(location instanceof Location)){
+         location = new Location(location);
+      }
       this.path.splice(index, 0, location);
       this.emit('change');
    }
@@ -224,7 +241,7 @@ const requiredProps = [
 
 class RecArea extends EventObject{
    constructor(area){
-      super(['change']);
+      super(['bookmarked', 'inroute']);
       this.id = area.RecAreaID;
       this.activities = area.ACTIVITY.map(function(a){ 
          return a.ActivityID; 
@@ -242,18 +259,25 @@ class RecArea extends EventObject{
       ;//need from elizabeth; use import and export 
    }
 
+   //WARNING: should only set one event listener per RecArea
+   //that updates all of a certain element with data matching
+   //the RecArea to avoid memory leaks and issues with removed elements 
    setBookmarked(/*boolean*/ value){
       this.bookmarked = value;
-      this.emit('change');
+      this.emit('bookmarked');
    }
-
    setInRoute(/*boolean*/ value){
       this.inRoute = value;
-      this.emit('change');
+      this.emit('inroute');
    }
-//togglebookmark> change
-//toggleonroute> change
 //setFocus > change
+
+   makeEvent(event){
+      console.warn(event);
+   }
+   toString(){
+      return 'RecArea';
+   }
 }
 
 class RecAreaCollection extends EventObject{
@@ -390,15 +414,15 @@ class Recreation{
       if(!this.inRoute.idMap[area.id]){
          area.setInRoute(true);
          this.inRoute.addData(area);
+         //do stuff with route here
       }
-      //do stuff with route here
    }
    removeFromRoute(area){
       if(this.inRoute.idMap[area.id]){
          area.setInRoute(false);
          this.inRoute.remove(area);
+         //do stuff with route here
       }
-      //do stuff with route here
    }
 
    search(){
