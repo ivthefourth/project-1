@@ -1,3 +1,5 @@
+import {retrieveSingleRecArea} from '../recreation/recAreaDetails.js';
+
 class EventObject{
    constructor(eventsArr){
       let events = this.events = {};
@@ -257,7 +259,7 @@ class RecArea extends EventObject{
       this.showDetails = this.showDetails.bind(this);
    }
    showDetails(){
-      ;//need from elizabeth; use import and export 
+      retrieveSingleRecArea(this);//need from elizabeth; use import and export 
    }
 
    //WARNING: should only set one event listener per RecArea
