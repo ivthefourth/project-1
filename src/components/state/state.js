@@ -254,6 +254,7 @@ class RecArea extends EventObject{
       this.inRoute = false;
       this.focused = false;
 
+      this.showDetails = this.showDetails.bind(this);
    }
    showDetails(){
       ;//need from elizabeth; use import and export 
