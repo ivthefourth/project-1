@@ -1,5 +1,7 @@
 import './recreation.css';
 import state from '../state/state';
+import './displayRecAreaSuggestions';
+import './recAreaDetails';
 
 var interestList = [
     {"ActivityName": "BIKING",
@@ -52,45 +54,19 @@ function recApiQuery(latitudeVal,longitudeVal,radiusVal,activityVal) {
     var recQueryURL = "https://ridb.recreation.gov/api/v1/recareas.json?apikey=2C1B2AC69E1945DE815B69BBCC9C7B19&full&latitude="
     + latitudeVal + "&longitude=" + longitudeVal + "&radius=" + radiusVal + "&activity=" + activityVal;
 
-    $.ajax({
-        url: recQueryURL,
-        method: "GET"
-    })
-    .done(function(recdata){
+        $.ajax({
+            url: recQueryURL,
+            method: "GET"
+        })
+        .done(function(recdata){
 
-        // Log this to the console so we see what the JSON data looks like
-        console.log(recdata);
-
-
-        for (var i = 0; i <recdata.RECDATA.length; i++) {
-
-            var recResults = JSON.stringify(recdata);
-
-            var sugDivClass = $("<div class='suggestionSummary'>");
-            var recAreaName = recdata.RECDATA[i].RecAreaName;
-            var recNameText = $("<p>").text(recAreaName);
-
-            var recAreaPhone = recdata.RECDATA[i].RecAreaPhone;
-            var recPhoneText = $("<p>").text(recAreaPhone);
-
-            //Get both the Title and URL values and create a link tag out of them
-            // We're only grabbing the first instance of the LINK array
-            var recAreaLinkTitle = recdata.RECDATA[i].LINK[0].Title;
-            var recAreaUrl = recdata.RECDATA[i].LINK[0].URL;
-            var recAreaLink = $("<a />", {
-                href: recAreaUrl,
-                text: recAreaLinkTitle,
-                target: "_blank"});
-
-            var recAreaLinkP = $("<p>").append(recAreaLink);
-            sugDivClass.append(recNameText, recAreaPhone, recAreaLinkP);
-
-            $("#filtered").append(sugDivClass);
-
-
-        }
-
+            // Log this to the console so we see what the JSON data looks like
+            // console.log(recdata);
+            state.recreation.addRecAreas(recdata.RECDATA);
+        return recdata;
     });
 }
+
+state.recreation.apiCall = recApiQuery;
 
 recApiQuery(40.37578,-105.50896,10,"14,16");
