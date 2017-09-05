@@ -1,7 +1,8 @@
 import state from '../state/state';
 
-    function displayRecAreaSummary(recdata) {
-        console.log(recdata);
+    function displayRecAreaSummary(recdata, filteredType) {
+        $(filteredType).empty();
+
         for (var i = 0; i <recdata.val.length; i++) {
 
             var recResults = JSON.stringify(recdata);
@@ -25,9 +26,23 @@ import state from '../state/state';
             var recAreaLinkP = $("<p>").append(recAreaLink);
             sugDivClass.append(recNameText, recAreaPhone, recAreaLinkP);
 
-            $("#filtered").append(sugDivClass);
+            $(filteredType).append(sugDivClass);
         }
     }
 
 
-state.recreation.filtered.on("change", displayRecAreaSummary);
+state.recreation.filtered.on("change",  function(recdata){
+
+        var filteredType = "#filtered";
+        displayRecAreaSummary(recdata, filteredType);
+});
+state.recreation.bookmarked.on("change", function(recdata){
+
+        var filteredType = "#bookmarked";
+        displayRecAreaSummary(recdata, filteredType);
+});
+state.recreation.inRoute.on("change",  function(recdata){
+
+        var filteredType = "#added-to-route";
+        displayRecAreaSummary(recdata, filteredType);
+});

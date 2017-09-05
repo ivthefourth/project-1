@@ -2,12 +2,10 @@
 *  Display the data to a modal on the web page */
 
 
-var recAreaId;
-
-export function retrieveRecAreaById(recAreaId) {
+export function retrieveSingleRecArea(recarea) {
 
     // retrieve the data using recAreaId
-
+    console.log(recarea);
 
     // display the data in a modal box
 
