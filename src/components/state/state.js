@@ -1,5 +1,5 @@
-import {retrieveSingleRecArea} from '../recreation/recAreaDetails.js';
-import {recApiQuery, interestList} from '../recreation/recreation.js';
+import {retrieveSingleRecArea} from '../recreation/recAreaDetails';
+import {recApiQuery, interestList} from '../recreation/constants';
 
 class EventObject{
    constructor(eventsArr){
@@ -8,7 +8,6 @@ class EventObject{
          //this array will contain callback functions
          events[e] = [];
       });
-
    }
 
    //set event listener
