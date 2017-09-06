@@ -1,5 +1,3 @@
-/* Retrieve the data for a recreation area based on RecAreaID
-*  Display the data to a modal on the web page */
 
 
 export function retrieveSingleRecArea(recarea) {
@@ -8,5 +6,20 @@ export function retrieveSingleRecArea(recarea) {
     console.log(recarea);
 
     // display the data in a modal box
+state.recreation.filtered.RECDATA[0].showDetails(suggestSumId);
 
 }
+
+$(document).ready(function(){
+
+   var suggestSumId = $(".suggestionSummary").attr("id");
+   console.log(suggestSumId);
+
+    $("#"+suggestSumId).on("click", function(){
+        // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+        $('.modal').modal('open');
+
+    })
+
+
+ });
