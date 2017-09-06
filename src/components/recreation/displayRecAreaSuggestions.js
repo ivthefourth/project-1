@@ -1,4 +1,5 @@
 import state from '../state/state';
+import './recAreaDetails';
 
     function displayRecAreaSummary(recdata, filteredType) {
         $(filteredType).empty();
@@ -29,11 +30,10 @@ import state from '../state/state';
             sugDivClass.append(recNameText, recAreaPhone, recAreaLinkP);
 
             $(filteredType).append(sugDivClass);
-
-            var suggestSumId = $(".suggestionSummary").attr("id");
-            console.log(suggestSumId);
+            displayRecAreaOnClick();
         }
     }
+
 
 
 state.recreation.filtered.on("change",  function(recdata){
