@@ -1,5 +1,5 @@
 import state from '../state/state';
-import './recAreaDetails';
+import {displayRecAreaOnClick} from  './recAreaDetails';
 
     function displayRecAreaSummary(recdata, filteredType) {
         $(filteredType).empty();
