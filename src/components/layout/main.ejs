@@ -16,7 +16,7 @@
 
    <!-- Maps API -->
    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEGAr0lLE7n6g1bEOC2smP7Q-F9ln8b-0&libraries=places"></script>
-</head>   
+</head>
 <body>
   <nav>
       <div class="nav-wrapper">
@@ -36,7 +36,7 @@
                   <div id="selected-interests"></div><br />
                   <div class="divider"></div><br />
                   <div id="unselected-interests"></div>
-               
+
              </li>
              <li>
                <div class="collapsible-header">Destinations</div>
@@ -58,12 +58,15 @@
                    <div class="row">
                      <div class="col s12">
                         <ul class="tabs">
-                          <li class="tab col s4"><a href="#filtered" class="active">All</a></li>
+                          <li class="tab col s4"><a href="#filtered-container" class="active">All</a></li>
                           <li class="tab col s4"><a href="#bookmarked">Bookmarked</a></li>
                           <li class="tab col s4"><a href="#added-to-route">Added to Route</a></li>
                         </ul>
                      </div>
-                     <div id="filtered"></div>
+                     <div id="filtered-container">
+                       <div id="button-container"></div>
+                       <div id="filtered"></div>
+                     </div>
                      <div id="bookmarked"></div>
                      <div id="added-to-route"></div>
                   </div>
@@ -72,5 +75,17 @@
          </ul>
       </div>
    </div>
+
+   <!-- Modal Structure -->
+   <div id="modal1" class="modal modal-fixed-footer">
+     <div class="modal-content">
+
+     </div>
+     <div class="modal-footer">
+       <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+     </div>
+   </div>
+
+
 </body>
 </html>

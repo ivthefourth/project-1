@@ -18,7 +18,7 @@ function autofill(input){
 // Return values to state object
 function getAddress(autocomplete) {
 	var place = autocomplete.getPlace();
-	console.log(place);
+	state.route.add(place);
 	console.log(place.geometry.location.lat());
 	console.log(place.geometry.location.lng());
 	$("#destinations").append("<div id='newbuttons'>");
@@ -30,7 +30,7 @@ function getAddress(autocomplete) {
 // Get the HTML input element for the autocompelte search box and create the autocomplete object
 // Translates address to lat/long coordinates for using on the map
 function newInputField() {
-	$("#newbuttons").remove();	
+	$("#newbuttons").remove();
 	var inputfield = $("<input>");
 	$("#destinations").append(inputfield);
 	inputfield.addClass("destination-input");
@@ -48,6 +48,6 @@ function newInputField() {
 // create event listener for path in state object.
 // what is path?
 //    an array of location objects
-// need to fill state -> path with the name and address of 
+// need to fill state -> path with the name and address of
 
 // for returning users (where path is filled), pre-fill previous route options to the input fields

@@ -1,3 +1,6 @@
+import {retrieveSingleRecArea} from '../recreation/recAreaDetails';
+import {recApiQuery, interestList} from '../recreation/constants';
+
 class EventObject{
    constructor(eventsArr){
       let events = this.events = {};
@@ -5,7 +8,6 @@ class EventObject{
          //this array will contain callback functions
          events[e] = [];
       });
-
    }
 
    //set event listener
@@ -112,6 +114,7 @@ class Location{
          //throw error if neither 
          this.type = 'place';
       }
+      //maybe remove after dev
       else{
          throw new Error('Provided location is not a PlaceResult or RecArea');
       }
@@ -192,6 +195,9 @@ class Route extends EventObject{
       ;
    }
 
+   makeEvent(){
+      return {val: this.path}
+   }
 
    toString(){
       return 'state.route';
@@ -254,9 +260,10 @@ class RecArea extends EventObject{
       this.inRoute = false;
       this.focused = false;
 
+      this.showDetails = this.showDetails.bind(this);
    }
    showDetails(){
-      ;//need from elizabeth; use import and export 
+      retrieveSingleRecArea(this);//need from elizabeth; use import and export 
    }
 
    //WARNING: should only set one event listener per RecArea
@@ -321,6 +328,7 @@ class RecAreaCollection extends EventObject{
       }.bind(this));
       this.emit('change');
    }
+   //change to allow an array or something?
    remove(area){
       if(this.idMap[area.id]){
          this.RECDATA.splice(this.RECDATA.indexOf(area), 1);
@@ -342,30 +350,50 @@ class RecStatus extends EventObject{
       super(['change', 'percent']);
       this.loading = false;
       this.percentLoaded = 100;
-      this.shouldLoad = true;
+      this.shouldLoad = false;
+      this.canLoad = false;
       this.firstLoad = true;
+
+      this.loadedActivities = {};
+      this.filteredActivities = {};
+      //if the route changes, this should be true.
+      this.shouldResetLoadedActivities = false;
    }
-   update({loading, percentLoaded, shouldLoad, firstLoad} = {}){
+   update({loading, percentLoaded, shouldLoad, canLoad, firstLoad} = {}){
       let change = false;
-      if(loading !== undefined){
+      if(loading !== undefined && loading !== this.loading){
          this.loading = loading;
          change = true;
       }
-      if(shouldLoad !== undefined){
+      if(shouldLoad !== undefined && shouldLoad !== this.shouldLoad){
          this.shouldLoad = shouldLoad;
          change = true;
       }
-      if(firstLoad !== undefined){
+      if(canLoad !== undefined && canLoad !== this.canLoad){
+         this.canLoad = canLoad;
+         change = true;
+      }
+      if(firstLoad !== undefined && firstLoad !== this.firstLoad){
          this.firstLoad = firstLoad;
          change = true;
       }
       if(change){
          this.emit('change');
       }
-      if(percentLoaded !== undefined){
+      if(percentLoaded !== undefined && percentLoaded !== this.percentLoaded){
          this.percentLoaded = percentLoaded;
          this.emit('percent');
       }
+   }
+
+   makeEvent(){
+      return {val: {
+         loading: this.loading,
+         percentLoaded: this.percentLoaded,
+         shouldLoad: this.shouldLoad,
+         firstLoad: this.firstLoad,
+         canLoad: this.canLoad
+      }};
    }
 
    toString(){
@@ -380,12 +408,11 @@ class Recreation{
       this.bookmarked = new RecAreaCollection('bookmarked');
       this.inRoute = new RecAreaCollection('inRoute');
 
-      this.apiCall = null;
-
-      //temporary
-      this.all.on('change', function(e){this.filtered.setData(e.val)}.bind(this));
+      this.apiCall = recApiQuery;
 
       this.status = new RecStatus;
+      this.search = this.search.bind(this);
+      this.filterAll = this.filterAll.bind(this);
    }
    addRecAreas(recdata){
       var data = recdata.reduce(function(arr, area){
@@ -425,9 +452,71 @@ class Recreation{
       }
    }
 
+   //sends api request(s) 
    search(){
-      ;//sends api request(s) 
+      var requestCount = 0;
+      if(this.status.shouldResetLoadedActivities){
+         this.status.loadedActivities = {};
+         this.status.shouldResetLoadedActivities = false;
+      }
+      var loaded = this.status.loadedActivities;
+      var interests = state.interests.selected.reduce((idString, interest) => {
+         //if we've already loaded recareas with this activity, don't add to activities
+         if(loaded[interest.id]){
+            return idString;
+         }
+         //otherwise, we will load it and keep track
+         else{
+            loaded[interest.id] = true;
+            this.status.filteredActivities[interest.id] = true;
+         }
+
+         if( idString.length)
+            return idString + ',' + interest.id;
+         else
+            return idString + interest.id;
+      }, '');
+
+      var callback = function(response){
+         this.addRecAreas(response.RECDATA);
+         requestCount -= 1;
+         if(requestCount === 0 ){
+            this.status.update({loading: false});
+            this.filterAll();
+         }
+      }.bind(this);
+
+      //temporary... eventually change to along route
+      state.route.path.forEach((l) => {
+         requestCount += 1;
+         this.apiCall(
+            l.data.geometry.location.lat(),
+            l.data.geometry.location.lng(),
+            50,
+            interests,
+            callback
+         );
+      });
+
+      this.status.update({shouldLoad: false, loading: true, firstLoad: false});
    }
+
+   filterAll(){
+      this.filtered.setData(this.all.RECDATA.filter((area) => {
+         var hasActivity = false;
+         for( let i = 0; i < area.activities.length; i++){
+            let activity = area.activities[i];
+            if(state.recreation.status.filteredActivities[activity]){
+               hasActivity = true;
+               break;
+            }
+         }
+         if(!hasActivity) return false;
+
+         return true;
+      }));
+   }
+
    toString(){
       return 'state.recreation';
    }
@@ -439,15 +528,15 @@ class Recreation{
 class State extends EventObject{
    constructor(){
       super(['ready']);
-      this.interests = null;
       this.recreation = new Recreation();
       this.route = new Route();
+      this.interests = new Interests(interestList);
    }
    
    //refactor this, use export and import from a separate file (not recreation.js)
-   setInterests(list){
-      this.interests = new Interests(list);
-   }
+   // setInterests(list){
+   //    this.interests = new Interests(list);
+   // }
    toString(){
       return 'state';
    }
@@ -456,12 +545,12 @@ class State extends EventObject{
    }
 }
 
-const STATE = new State;
+const state = new State;
 
 /* TEMPORARY, REMOVE LATER */
-window.state = STATE;
+window.state = state;
 
-export default STATE;
+export default state;
 
 
 //State Diagram
@@ -524,4 +613,3 @@ export default STATE;
 //    //(checks local storage and updates data appropriately)
 //    init: function(){},
 // }
-
