@@ -1,4 +1,5 @@
 
+// import {displayRecAreaSummary} from './displayRecAreaSuggestions';
 
 export function retrieveSingleRecArea(recarea) {
 
@@ -6,7 +7,7 @@ export function retrieveSingleRecArea(recarea) {
     console.log(recarea);
 
     // display the data in a modal box
-state.recreation.filtered.RECDATA[0].showDetails(suggestSumId);
+state.recreation.filtered.RECDATA[0].showDetails(recAreaId);
 
 }
 
@@ -16,13 +17,14 @@ $(document).ready(function(){
 
  });
 
- export function displayRecAreaOnClick() {
-    var suggestSumId = $(".suggestionSummary").attr("id");
-    console.log(suggestSumId);
+ export function displayRecAreaOnClick(recAreaId) {
+    // var suggestSumId = $(".suggestionSummary").attr("id");
+    // console.log(suggestSumId);
 
-     $("#"+suggestSumId).on("click", function(){
+       console.log(recAreaId);
+     $("suggestionSummary").on("click", function(){
          // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
          $('.modal').modal('open');
-
+         $('.modal').append(retrieveSingleRecArea(recAreaId));
      })
  }

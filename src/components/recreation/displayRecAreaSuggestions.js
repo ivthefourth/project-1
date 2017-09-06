@@ -1,7 +1,7 @@
 import state from '../state/state';
 import {displayRecAreaOnClick} from  './recAreaDetails';
 
-    function displayRecAreaSummary(recdata, filteredType) {
+    export function displayRecAreaSummary(recdata, filteredType) {
         $(filteredType).empty();
 
         for (var i = 0; i <recdata.val.length; i++) {
@@ -12,7 +12,7 @@ import {displayRecAreaOnClick} from  './recAreaDetails';
 
             var sugDivClass = $("<div class='suggestionSummary' id='areaId-" + recValAlias.id + "'>");
             var recAreaName = recValAlias.RecAreaName;
-            var recNameText = $("<p>").text(recAreaName);
+            var recNameText = $("<div>").text(recAreaName);
 
             var recAreaPhone = recValAlias.RecAreaPhone;
             var recPhoneText = $("<p>").text(recAreaPhone);
@@ -30,8 +30,13 @@ import {displayRecAreaOnClick} from  './recAreaDetails';
             sugDivClass.append(recNameText, recAreaPhone, recAreaLinkP);
 
             $(filteredType).append(sugDivClass);
-            displayRecAreaOnClick();
+
+            // Get the RecAreaId and return it to displayRecAreaOnClick
+            var recAreaId = [];
+            recAreaId.push(recValAlias.id);
+
         }
+            displayRecAreaOnClick();
     }
 
 
