@@ -17,3 +17,12 @@
 #route-newLocationText {
 	display: inline-block;
 }
+
+.inputContainer {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.inputContainer input {
+	margin-bottom: 0px;
+}
