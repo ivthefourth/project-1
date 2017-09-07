@@ -1,3 +1,6 @@
+import {retrieveSingleRecArea} from '../recreation/recAreaDetails';
+import {recApiQuery, interestList} from '../recreation/constants';
+
 class EventObject{
    constructor(eventsArr){
       let events = this.events = {};
@@ -5,7 +8,6 @@ class EventObject{
          //this array will contain callback functions
          events[e] = [];
       });
-
    }
 
    //set event listener
@@ -28,7 +30,7 @@ class EventObject{
       }
       else{
          let callbacks = this.events[event];
-         let e = this.makeEvent();
+         let e = this.makeEvent(event);
          //execute all callbacks
          callbacks.forEach(function(c){
             c(e);
@@ -103,18 +105,100 @@ class Interests extends EventObject{
      Route    
 \*************/
 class Location{
-   constructor(){
-      ;
+   constructor(object){
+      if( object instanceof RecArea){
+          this.type = 'recarea';
+      }
+      else if(object.hasOwnProperty('place_id')){
+         //google places place... somehow test for google place and 
+         //throw error if neither 
+         this.type = 'place';
+      }
+      //maybe remove after dev
+      else{
+         throw new Error('Provided location is not a PlaceResult or RecArea');
+      }
+      this.data = object;
    }
 }
 
-class Route{
+class Route extends EventObject{
    constructor(){
+      super(['change']);
+      this.path = [];
+   }
+   get locationCount(){
+      return this.path.length;
+   }
+
+   get origin(){
+      return this.path[0] || null;
+   }
+   get waypoints(){
+      if( this.locationCount < 3){
+         return null;
+      }
+      else{
+         return this.path.slice(1, this.locationCount - 1);
+      }
+   }
+   get destination(){
+      if( this.locationCount < 2){
+         return null;
+      }
+      else{
+         return this.path[this.locationCount - 1];
+      }
+   }
+
+   add(location){
+      if (!(location instanceof Location)){
+         location = new Location(location);
+      }
+      this.path.push(location);
+      this.emit('change');
+   }
+   insert(location, index){
+      if (!(location instanceof Location)){
+         location = new Location(location);
+      }
+      this.path.splice(index, 0, location);
+      this.emit('change');
+   }
+   remove(index){
+      this.path.splice(index, 1);
+      this.emit('change');
+   }
+   invert(){
+      if( this.locationCount !== 2){
+         throw new Error(
+            'Can only invert route if route.path contains exactly two locations'
+         );
+      }
+      else{
+         this.path.push(this.path.shift());
+         this.emit('change');
+      }
+   }
+
+   addRecArea(area){
+      ;
+      this.emit('change');
+   }
+   removeRecArea(id){
+      ;
+      this.emit('change');
+   }
+
+   //will "highlight" location at given index of path on the map
+   highlight(index){
       ;
    }
-   addLocation(){
-      ;
+
+   makeEvent(){
+      return {val: this.path}
    }
+
    toString(){
       return 'state.route';
    }
@@ -137,13 +221,33 @@ class Map{
 \**************/
 const requiredProps = [
    'RecAreaName',
+   'RECAREAADDRESS',
+   'FACILITY',
+   'OrgRecAreaID',
+   'GEOJSON',
+   'LastUpdatedDate',
+   'EVENT',
+   'ORGANIZATION',
+   'RecAreaEmail',
+   'RecAreaReservationURL',
+   'RecAreaLongitude',
+   'RecAreaID',
    'RecAreaPhone',
-   'LINK'
+   'MEDIA',
+   'LINK',
+   'RecAreaDescription',
+   'RecAreaMapURL',
+   'RecAreaLatitude',
+   'StayLimit',
+   'RecAreaFeeDescription',
+   'RecAreaDirections',
+   'Keywords',
+   'ACTIVITY'
 ];
 
 class RecArea extends EventObject{
    constructor(area){
-      super(['change']);
+      super(['bookmarked', 'inroute']);
       this.id = area.RecAreaID;
       this.activities = area.ACTIVITY.map(function(a){ 
          return a.ActivityID; 
@@ -156,10 +260,31 @@ class RecArea extends EventObject{
       this.inRoute = false;
       this.focused = false;
 
+      this.showDetails = this.showDetails.bind(this);
    }
-//togglebookmark> change
-//toggleonroute> change
+   showDetails(){
+      retrieveSingleRecArea(this);//need from elizabeth; use import and export 
+   }
+
+   //WARNING: should only set one event listener per RecArea
+   //that updates all of a certain element with data matching
+   //the RecArea to avoid memory leaks and issues with removed elements 
+   setBookmarked(/*boolean*/ value){
+      this.bookmarked = value;
+      this.emit('bookmarked');
+   }
+   setInRoute(/*boolean*/ value){
+      this.inRoute = value;
+      this.emit('inroute');
+   }
 //setFocus > change
+
+   makeEvent(event){
+      console.warn(event);
+   }
+   toString(){
+      return 'RecArea';
+   }
 }
 
 class RecAreaCollection extends EventObject{
@@ -174,6 +299,7 @@ class RecAreaCollection extends EventObject{
       //in this collection (by id)
       this.idMap = {};
    }
+
    addData(recdata){
       let change = false;
       if( !(recdata instanceof Array)){
@@ -190,14 +316,9 @@ class RecAreaCollection extends EventObject{
          this.emit('change');
       }
    }
-   removeData(recdata){
-      if( !(recdata instanceof Array)){
-         recdata = [recdata];
-      }
-      //only emit if data has changed... i.e., not all duplicates 
-   }
    setData(recdata){
       this.idMap = {};
+      this.RECDATA = [];
       if( !(recdata instanceof Array)){
          recdata = [recdata];
       }
@@ -207,6 +328,15 @@ class RecAreaCollection extends EventObject{
       }.bind(this));
       this.emit('change');
    }
+   //change to allow an array or something?
+   remove(area){
+      if(this.idMap[area.id]){
+         this.RECDATA.splice(this.RECDATA.indexOf(area), 1);
+         delete this.idMap[area.id];
+         this.emit('change');
+      }
+   }
+
    makeEvent(){
       return {val: this.RECDATA}
    }
@@ -220,31 +350,52 @@ class RecStatus extends EventObject{
       super(['change', 'percent']);
       this.loading = false;
       this.percentLoaded = 100;
-      this.shouldLoad = true;
+      this.shouldLoad = false;
+      this.canLoad = false;
       this.firstLoad = true;
+
+      this.loadedActivities = {};
+      this.filteredActivities = {};
+      //if the route changes, this should be true.
+      this.shouldResetLoadedActivities = false;
    }
-   update({loading, percentLoaded, shouldLoad, firstLoad} = {}){
+   update({loading, percentLoaded, shouldLoad, canLoad, firstLoad} = {}){
       let change = false;
-      if(loading !== undefined){
+      if(loading !== undefined && loading !== this.loading){
          this.loading = loading;
          change = true;
       }
-      if(shouldLoad !== undefined){
+      if(shouldLoad !== undefined && shouldLoad !== this.shouldLoad){
          this.shouldLoad = shouldLoad;
          change = true;
       }
-      if(firstLoad !== undefined){
+      if(canLoad !== undefined && canLoad !== this.canLoad){
+         this.canLoad = canLoad;
+         change = true;
+      }
+      if(firstLoad !== undefined && firstLoad !== this.firstLoad){
          this.firstLoad = firstLoad;
          change = true;
       }
       if(change){
          this.emit('change');
       }
-      if(percentLoaded !== undefined){
+      if(percentLoaded !== undefined && percentLoaded !== this.percentLoaded){
          this.percentLoaded = percentLoaded;
          this.emit('percent');
       }
    }
+
+   makeEvent(){
+      return {val: {
+         loading: this.loading,
+         percentLoaded: this.percentLoaded,
+         shouldLoad: this.shouldLoad,
+         firstLoad: this.firstLoad,
+         canLoad: this.canLoad
+      }};
+   }
+
    toString(){
       return 'state.recreation.status';
    }
@@ -255,16 +406,17 @@ class Recreation{
       this.all = new RecAreaCollection('all');
       this.filtered = new RecAreaCollection('filtered');
       this.bookmarked = new RecAreaCollection('bookmarked');
-      this.addedToRoute = new RecAreaCollection('addedToRoute');
+      this.inRoute = new RecAreaCollection('inRoute');
 
-      //temporary
-      this.all.on('change', function(e){this.filtered.setData(e.val)}.bind(this));
+      this.apiCall = recApiQuery;
 
       this.status = new RecStatus;
+      this.search = this.search.bind(this);
+      this.filterAll = this.filterAll.bind(this);
    }
    addRecAreas(recdata){
       var data = recdata.reduce(function(arr, area){
-         let temp = []
+         let temp = [];
          if( !this.all.idMap[area.RecAreaID] ){
             temp.push(new RecArea(area));
          }
@@ -272,6 +424,99 @@ class Recreation{
       }.bind(this), []);
       this.all.addData(data);
    }
+
+   addBookmark(area){
+      if(!this.bookmarked.idMap[area.id]){
+         area.setBookmarked(true);
+         this.bookmarked.addData(area);
+      }
+   }
+   removeBookmark(area){
+      if(this.bookmarked.idMap[area.id]){
+         area.setBookmarked(false);
+         this.bookmarked.remove(area);
+      }
+   }
+   addToRoute(area){
+      if(!this.inRoute.idMap[area.id]){
+         area.setInRoute(true);
+         this.inRoute.addData(area);
+         //do stuff with route here
+      }
+   }
+   removeFromRoute(area){
+      if(this.inRoute.idMap[area.id]){
+         area.setInRoute(false);
+         this.inRoute.remove(area);
+         //do stuff with route here
+      }
+   }
+
+   //sends api request(s) 
+   search(){
+      var requestCount = 0;
+      if(this.status.shouldResetLoadedActivities){
+         this.status.loadedActivities = {};
+         this.status.shouldResetLoadedActivities = false;
+      }
+      var loaded = this.status.loadedActivities;
+      var interests = state.interests.selected.reduce((idString, interest) => {
+         //if we've already loaded recareas with this activity, don't add to activities
+         if(loaded[interest.id]){
+            return idString;
+         }
+         //otherwise, we will load it and keep track
+         else{
+            loaded[interest.id] = true;
+            this.status.filteredActivities[interest.id] = true;
+         }
+
+         if( idString.length)
+            return idString + ',' + interest.id;
+         else
+            return idString + interest.id;
+      }, '');
+
+      var callback = function(response){
+         this.addRecAreas(response.RECDATA);
+         requestCount -= 1;
+         if(requestCount === 0 ){
+            this.status.update({loading: false});
+            this.filterAll();
+         }
+      }.bind(this);
+
+      //temporary... eventually change to along route
+      state.route.path.forEach((l) => {
+         requestCount += 1;
+         this.apiCall(
+            l.data.geometry.location.lat(),
+            l.data.geometry.location.lng(),
+            50,
+            interests,
+            callback
+         );
+      });
+
+      this.status.update({shouldLoad: false, loading: true, firstLoad: false});
+   }
+
+   filterAll(){
+      this.filtered.setData(this.all.RECDATA.filter((area) => {
+         var hasActivity = false;
+         for( let i = 0; i < area.activities.length; i++){
+            let activity = area.activities[i];
+            if(state.recreation.status.filteredActivities[activity]){
+               hasActivity = true;
+               break;
+            }
+         }
+         if(!hasActivity) return false;
+
+         return true;
+      }));
+   }
+
    toString(){
       return 'state.recreation';
    }
@@ -283,12 +528,15 @@ class Recreation{
 class State extends EventObject{
    constructor(){
       super(['ready']);
-      this.interests = null;
       this.recreation = new Recreation();
+      this.route = new Route();
+      this.interests = new Interests(interestList);
    }
-   setInterests(list){
-      this.interests = new Interests(list);
-   }
+   
+   //refactor this, use export and import from a separate file (not recreation.js)
+   // setInterests(list){
+   //    this.interests = new Interests(list);
+   // }
    toString(){
       return 'state';
    }
@@ -297,12 +545,12 @@ class State extends EventObject{
    }
 }
 
-const STATE = new State;
+const state = new State;
 
 /* TEMPORARY, REMOVE LATER */
-window.state = STATE;
+window.state = state;
 
-export default STATE;
+export default state;
 
 
 //State Diagram
@@ -347,15 +595,14 @@ export default STATE;
 //       ,//
 //    },
 //    RECREATION: {
+//       addBookmark> adds bookmark and sets its bookmark property 
+//       addToRoute > similar to above
 //       ,//filteredSuggestions >has events
 //       ,//bookmarks
 //       ,//bookmark function
 //       ,//inRoute
 //       ,//add to route function
-//       ,//initialLoad > has event
-//       ,//refreshNeeded > has event.... should load more/has loaded???
-//       ,//loadSuggestions / apiCall function (on button click)
-//       ,//setAPIrequest < adds a function for a single api request 
+//       ,//status
 //       ,//setLeg/location (A to B; just A; B to C??)
 //    },
 //    on: function(eventString, callback){},
@@ -366,4 +613,3 @@ export default STATE;
 //    //(checks local storage and updates data appropriately)
 //    init: function(){},
 // }
-

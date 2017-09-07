@@ -1,3 +1,19 @@
 .route{
    background: lightgrey;
 }
+
+#route-addBtn {
+	display: inline-block;
+	margin-right: 10px;
+	height: 25px;
+	padding-top: 0;
+	width: 25px;
+}
+
+.btn-floating i {
+	line-height: 25px
+}
+
+#route-newLocationText {
+	display: inline-block;
+}
