@@ -22,4 +22,13 @@ $(document).ready(function() {
 
 	});
 	}
-  });
+
+	var selectedInterestsArray = [];
+
+	$(".chip").click(function(){
+		console.log($(this).html());
+		selectedInterestsArray.push($(this).html());
+		console.log(selectedInterestsArray);
+		localStorage.setItem('selectedInterestsArray', selectedInterestsArray);
+	});
+});
