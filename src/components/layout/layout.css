@@ -11,3 +11,7 @@
 	cursor: pointer;
 	display: block;
 }
+
+#map {
+	top: 7px;
+}
