@@ -3,18 +3,21 @@ import state from '../state/state';
     export function displayRecAreaSummary(recdata, filteredType) {
         $(filteredType).empty();
 
+        // var breakDiv = "<div class=divider>";
+        // $(filteredType).append(breakDiv);
+
         for (var i = 0; i <recdata.val.length; i++) {
 
             var recValAlias = recdata.val[i];
 
             var recResults = JSON.stringify(recdata);
 
-            var sugDivClass = $("<div class='suggestionSummary' id='areaId-" + recValAlias.id + "'>");
-            var recAreaName = recValAlias.RecAreaName;
-            var recNameText = $("<div>").text(recAreaName);
+            var sugDivClass = $("<ul class='suggestionSummary card' id='areaId-" + recValAlias.id + "'>");
 
-            var recAreaPhone = recValAlias.RecAreaPhone;
-            var recPhoneText = $("<p>").text(recAreaPhone);
+            var recNameText = $("<strong><li card-title>").text(recValAlias.RecAreaName);
+
+
+            var recPhoneText = $("<li card-content>").text(recValAlias.RecAreaPhone);
 
             //Get both the Title and URL values and create a link tag out of them
             // We're only grabbing the first instance of the LINK array
@@ -25,8 +28,8 @@ import state from '../state/state';
                 text: recAreaLinkTitle,
                 target: "_blank"});
 
-            var recAreaLinkP = $("<p>").append(recAreaLink);
-            sugDivClass.append(recNameText, recAreaPhone, recAreaLinkP);
+            var recAreaLinkP = $("<li card-content>").append(recAreaLink);
+            sugDivClass.append(recNameText, recPhoneText, recAreaLinkP);
 
             $(filteredType).append(sugDivClass);
 
