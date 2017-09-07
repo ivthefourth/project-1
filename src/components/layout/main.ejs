@@ -31,7 +31,7 @@
       <div class="col s3 m3 l3">
          <ul class="collapsible" data-collapsible="expandable">
              <li>
-               <div class="collapsible-header">Interests</div>
+               <div class="collapsible-header active">Interests</div>
                <div class="collapsible-body" id="interests">
                   <div id="selected-interests"></div><br />
                   <div class="divider"></div><br />
@@ -39,7 +39,7 @@
                   <div><a class="waves-effect waves-light btn" id ="clear-interests">Clear Interests</a></div>
              </li>
              <li>
-               <div class="collapsible-header">Destinations</div>
+               <div class="collapsible-header active">Destinations</div>
                <div class="collapsible-body" id="destinations">
                </div>
              </li>
@@ -53,16 +53,17 @@
       <div class="col s3 m3 l3">
          <ul class="collapsible" data-collapsible="expandable">
              <li>
-               <div class="collapsible-header">Suggestions</div>
+               <div class="collapsible-header active">Suggestions</div>
                <div class="collapsible-body" id="suggestions">
                    <div class="row">
                      <div class="col s12">
                         <ul class="tabs">
-                          <li class="tab col s4"><a href="#filtered-container" class="active">All</a></li>
+                          <li class="tab col s4"><a class="active" href="#filtered-container">All</a></li>
                           <li class="tab col s4"><a href="#bookmarked">Bookmarked</a></li>
                           <li class="tab col s4"><a href="#added-to-route">Added to Route</a></li>
                         </ul>
                      </div>
+                     <div class="divider"></div>
                      <div id="filtered-container">
                        <div id="button-container"></div>
                        <div id="filtered"></div>
