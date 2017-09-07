@@ -43,7 +43,7 @@ state.recreation.filtered.on('change', function(e){
          lat: r.RecAreaLatitude,
          lng: r.RecAreaLongitude
       };
-      addMarker(latLng, 'rec', makePreview(r));
+      addMarker(latLng, 'rec', r);
       bounds.extend(latLng);
    });
    if( e.val.length){
@@ -53,19 +53,20 @@ state.recreation.filtered.on('change', function(e){
 
 
 
-function addMarker(location, type, preview) {
+function addMarker(location, type, area) {
    let marker = new google.maps.Marker({
       position: location,
       map: map
    });
-   if(preview){
-      let info = new google.maps.InfoWindow({content: preview});
+   if(area){
+      let info = new google.maps.InfoWindow({content: makePreview(area)});
       marker.addListener('mouseover', (e) => {
          info.open(map, marker);
       });
       marker.addListener('mouseout', (e) => {
          info.close();
       });
+      marker.addListener('click', area.showDetails);
    }
    if( type === 'rec'){
       recAreaMarkers.push(marker);

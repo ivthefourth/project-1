@@ -1,8 +1,6 @@
 import './route.css';
 import state from '../state/state';
 
-var stopcount = 0;
-
 var options = {
   componentRestrictions: {country: 'us'}
 };
@@ -17,21 +15,30 @@ state.route.on("change", function (e){
 	} else {
 		for (let i = 0; i < e.val.length; i++) {
 			var location = e.val[i];
+			var inputContainer = $("<div>");
+			inputContainer.attr("class", "inputContainer");
 			let newInput = $("<input>").val(location.data.name + ' (' + location.data.formatted_address + ')');
+			inputContainer.append(newInput);
 			newInput.focusout(function(){
 				if (newInput.val() == ""){
 					state.route.remove(i);
 				}
 			});
-			$("#destinations").append(newInput);
+			newInput.keypress(function (e) {
+ 				var key = e.which;
+				if (newInput.val() == ""){
+					state.route.remove(i);
+				}
+			});
+			$("#destinations").append(inputContainer);
 			autofill(newInput[0], false, i);
 			$("#destinations").append("<br>");
 		} 
+		$("#destinations").append("<div id='newbuttons'>");
+		$("#newbuttons").append("<a class='btn-floating btn-small waves-effect waves-light red' id='route-addBtn'><i class='material-icons'>add</i></a>");
+		$("#newbuttons").append("<p id='route-newLocationText'>Add a New Stop</p>");
+		$("#route-addBtn").click(newInputField);
 	}
-	$("#destinations").append("<div id='newbuttons'>");
-	$("#newbuttons").append("<a class='btn-floating btn-small waves-effect waves-light red' id='route-addBtn'><i class='material-icons'>add</i></a>");
-	$("#newbuttons").append("<p id='route-newLocationText'>Add a New Stop</p>");
-	$("#route-addBtn").click(newInputField);
 });
 
 // Applied autofill code to the new input fields and sends input to state object
@@ -50,25 +57,19 @@ function autofill(input, add, index){
 }
 
 // Get the HTML input element for the autocompelte search box and create the autocomplete object
-// Translates address to lat/long coordinates for using on the map
 function newInputField() {
-	$("#newbuttons").remove();	
+	$("#newbuttons").remove();
 	var inputfield = $("<input>");
 	$("#destinations").append(inputfield);
 	inputfield.addClass("destination-input");
-	if (stopcount == 0) {
+	if (state.route.locationCount == 0) {
 		inputfield.attr("placeholder", "Starting Location: ");
 	}
 	else {
 		inputfield.attr("placeholder", "Next Stop: ");
 	}
 	autofill(inputfield[0], true);
-	stopcount++;
 }
 
-// create event listener for path in state object.
-// what is path?
-//    an array of location objects
-// need to fill state -> path with the name and address of 
-
-// for returning users (where path is filled), pre-fill previous route options to the input fields
+// create the "X" for places to be deleted.
+// transform a box into a dragable input field - call invert function
