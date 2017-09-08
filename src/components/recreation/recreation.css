@@ -1,9 +1,14 @@
+.modal{
+    background-color: rgb(224,240,242);
+}
+
 .recreation{
    background: red;
 }
 
 .suggestionSummary {
     font-size: 1em;
+    margin-top: 15%;
 }
 
 .suggestionSummary:hover {
@@ -12,7 +17,6 @@
 }
 
 #recNameModal {
-    /*margin-top: 5%;*/
     font-size: 25px;
     text-align: center;
 }
@@ -22,11 +26,17 @@
     line-height: 5%;
 }
 
-#activityModalHead {
+#activityModalHead, #descModal, #addressHeadModal {
     margin-left: 5%;
+    margin-top: 2%;    
 }
 
-#recPhoneModal {
+#recPhoneModal, #recEmailModal, #recUrlModal {
     margin-left: 5%;
     text-align: center;
+}
+
+.addressModal {
+    margin-left: 5%;
+
 }
