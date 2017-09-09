@@ -1,5 +1,6 @@
 import {retrieveSingleRecArea} from '../recreation/recAreaDetails';
 import {recApiQuery, interestList} from '../recreation/constants';
+import map from '../map/mapconstant';
 
 class EventObject{
    constructor(eventsArr){
@@ -59,6 +60,7 @@ class Interest extends EventObject{
       this.eventShouldPropagate = true;
 
       this.makeEvent = this.makeEvent.bind(this);
+      this.toggle = this.toggle.bind(this);
    }
    //toggles selected property
    toggle(){
@@ -620,7 +622,19 @@ class Recreation{
    }
 
    filterAll(){
-      this.filtered.setData(this.all.RECDATA.filter((area) => {
+      var data;
+      if(!state.interests.selected.length){
+         data = [];
+         console.log('NO INTERESTS');
+      }
+      else if(!state.route.locationCount){
+         data = [];
+         console.log('NO LOCATION');
+      }
+      else{
+         data = this.all.RECDATA;
+      }
+      this.filtered.setData(data.filter((area) => {
          var hasActivity = false;
          for( let i = 0; i < area.activities.length; i++){
             let activity = area.activities[i];

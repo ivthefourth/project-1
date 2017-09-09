@@ -1,15 +1,10 @@
 import './map.css';
 import state from '../state/state';
+import map from './mapconstant';
 
 const directionsService = new google.maps.DirectionsService();
 const directionsDisplay = new google.maps.DirectionsRenderer();
-const map = new google.maps.Map(document.getElementById('map'), {
-  center: {lat: 39.7642548, lng: -104.9951937},
-  zoom: 5
-});
 
-//TEMP
-window.map = map;
 
 directionsDisplay.setMap(map);
 
