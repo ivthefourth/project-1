@@ -8,7 +8,7 @@ $(document).ready(function() {
     function addChip() {
 		for (let i = 0; i < state.interests.all.length; i++) {
 			
-			let newChip = $('<div class="chip"></div>');
+			let newChip = $('<div class="chip center"></div>');
 			$("#unselected-interests").append(newChip.text(state.interests.all[i].name));
 			
 			$(newChip).click(function() {
