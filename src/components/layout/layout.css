@@ -5,7 +5,9 @@
 .layout{
    background: rebeccapurple;
 }
-.selected{color: blue;}
+.selected{
+	color: deepskyblue;
+}
 
 .chip {
 	cursor: pointer;
