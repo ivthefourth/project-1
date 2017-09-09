@@ -26,6 +26,8 @@
 
 .collapsible-body {
 	padding: 15px;
+	max-height: 80vh;
+	overflow: auto;
 }
 
 .collapsible-header {
@@ -42,7 +44,7 @@
 }
 
 .modal-content {
-	background: #fcfdfc;
+	background: #dfeadf;
 }
 
 #suggestions a {
@@ -56,3 +58,8 @@
  .padding {
  	padding-top: 10px;
  }
+
+ /*#suggestions {
+ 	max-height: 90%;
+ }
+*/

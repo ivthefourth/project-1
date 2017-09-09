@@ -9,7 +9,7 @@ $(document).ready(function() {
 		for (let i = 0; i < state.interests.all.length; i++) {
 			
 			let newChip = $('<div class="chip center"></div>');
-			$("#unselected-interests").append(newChip.text(state.interests.all[i].name));
+			$("#unselected-interests").append(newChip.text(state.interests.all[i].iconId));
 			
 			$(newChip).click(function() {
 				state.interests.all[i].toggle();
@@ -41,14 +41,24 @@ $(document).ready(function() {
 		localStorage.setItem('interests', JSON.stringify(interests));
 	});
 
-	// $("#clear-interests").click(function() {
+	$("#clear-interests").click(function() {
 	
-	// 	state.interests.all.forEach(function(clear) {
-	// 		clear.selected = false;
-	// 	});
-	// 	state.interests.emit('change');
-	// 	console.log(state);
-	// });
+		state.interests.selected.forEach(function(clear) {
+			clear.update(false, true);
+		});
+		state.interests.emit('change');
+		console.log(state);
+	});
+
+	// var topic = "biking";
+
+	// var queryURL = "https://emojipedia.org/search/?q=" + topic;
+
+	// $.ajax({
+	// 		url: queryURL,
+	// 		method: 'GET'
+	// 		}).done(function(response) {
+	// 			console.log(response);
 });
 
 
