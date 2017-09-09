@@ -30,35 +30,34 @@ export function retrieveSingleRecArea(recarea) {
         id: "recUrlModal"});
 
     // Append the details of the recarea to the modal
-    $('#modal-content').append(recNameText,recPhoneText,recAreaEmail,recAreaLink);
+    $('#modal1-content').append(recNameText,recPhoneText,recAreaEmail,recAreaLink);
 
     // RecAreaDescription
 
-    $('#modal-content').append(`<strong><div id='descModal'>Description:</strong> ${recarea.RecAreaDescription}`);
+    $('#modal1-content').append(`<strong><div id='descModal'>Description:</strong> ${recarea.RecAreaDescription}`);
 
     // Append the Activities to the modal
-    $('#modal-content').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
+    $('#modal1-content').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
     recarea.ACTIVITY.forEach(function(activity){
-        $('#modal-content').append("<ul>");
-        $('#modal-content').append("<li id='activityTypeModal'>" + activity.ActivityName);
+        $('#modal1-content').append("<ul>");
+        $('#modal1-content').append("<li id='activityTypeModal'>" + activity.ActivityName);
     })
 
     // RECAREAADDRESS
     recarea.RECAREAADDRESS.forEach(function(address){
-        $('#modal-content').append("<strong><div id='addressHeadModal'>Address");
-        $('#modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress1);
-        $('#modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress2);
-        $('#modal-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
+        $('#modal1-content').append("<strong><div id='addressHeadModal'>Address");
+        $('#modal1-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress1);
+        $('#modal1-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress2);
+        $('#modal1-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
     })
 
-    // Append
 
     // Set/Unset the bookmark item
     bookMarkItem = function(){
         if (recarea.bookmarked === false) {
         state.recreation.addBookmark(recarea);
-        // $("#book-mark-btn").attr("i class='material-icons dp48"');
-        $("#book-mark-btn").text("star");
+        // $("#book-mark-btn").attr("i class","material-icons dp48");
+      console.log("This sets the bookmark");
         } else {
             $('#book-mark-btn').text("Unbookmark");           
             state.recreation.removeBookmark(recarea);
@@ -66,13 +65,6 @@ export function retrieveSingleRecArea(recarea) {
         }
     }
 
-    // Remove the bookmark
-    // unsetBookMark = function(){
-    //     if (state.RecArea.bookedmarked == true) {
-    //         state.recreation.removeBookmark(recarea);
-    //         $('book-mark-btn').text("Unbookmark");
-    //     }
-    // }
 
     // Last step is to open the modal after everything is appended
         $('#modal1').modal('open');
