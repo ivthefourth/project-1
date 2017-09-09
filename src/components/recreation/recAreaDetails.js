@@ -6,35 +6,50 @@ import './recreation.css';
 
 // display the data in a modal box
 export function retrieveSingleRecArea(recarea) {
-    $('.modal').empty();
+    $('.modal-content').empty();
     // retrieve the data using recAreaId
     console.log(recarea);
 
     // The recreation Area Title
-    var recAreaName = recarea.RecAreaName;
-    var recNameText = $("<div id='recNameModal'>").text(recAreaName);
+    var recNameText = $("<div id='recNameModal'>").text(recarea.RecAreaName);
 
     //The published phone number of the area
-    var recAreaPhone = recarea.RecAreaPhone;
-    var recPhoneText = $("<div id='recPhoneModal'>").text(recAreaPhone);
+    var recPhoneText = $("<div id='recPhoneModal'>").text(recarea.RecAreaPhone);
 
-        var recAreaLinkTitle = recarea.LINK[0].Title;
-        var recAreaUrl = recarea.LINK[0].URL;
-        var recAreaLink = $("<a />", {
-            href: recAreaUrl,
-            text: recAreaLinkTitle,
-            target: "_blank"});
+    var recAreaEmail = $("<div id='recEmailModal'>").text(recarea.RecAreaEmail);
 
-    // Append the name and phone
-    $('.modal').append(recNameText,recPhoneText,recAreaLink);
+    var recAreaLinkTitle = recarea.LINK[0].Title;
+    var recAreaUrl = recarea.LINK[0].URL;
+    var recAreaLink = $("<a />", {
+        href: recAreaUrl,
+        text: recAreaLinkTitle,
+        target: "_blank",
+        id: "recUrlModal"});
 
-    $('.modal').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
+    // Append the details of the recarea to the modal
+    $('.modal-content').append(recNameText,recPhoneText,recAreaEmail,recAreaLink);
+
+    // RecAreaDescription
+
+    $('.modal-content').append(`<strong><div id='descModal'>Description:</strong> ${recarea.RecAreaDescription}`);
+
+    // Append the Activities to the modal
+    $('.modal-content').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
     recarea.ACTIVITY.forEach(function(activity){
-        $('.modal').append("<ul>");
-        $('.modal').append("<li id='activityTypeModal'>" + activity.ActivityName);
+        $('.modal-content').append("<ul>");
+        $('.modal-content').append("<li id='activityTypeModal'>" + activity.ActivityName);
     })
 
-        $('#modal1').modal('open');
+    // RECAREAADDRESS
+    recarea.RECAREAADDRESS.forEach(function(address){
+        $('.modal-content').append("<strong><div id='addressHeadModal'>Address");
+        $('.modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress1);
+        $('.modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress2);
+        $('.modal-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
+    })
+
+    // Last step is to open the modal after everything is appended
+        $('.modal').modal('open');
 
 }
 
