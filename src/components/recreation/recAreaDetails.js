@@ -34,21 +34,21 @@ export function retrieveSingleRecArea(recarea) {
 
     // RecAreaDescription
 
-    $('#modal-content').append(`<strong><div id='descModal'>Description:</strong> ${recarea.RecAreaDescription}`);
+    $('#modal1-content').append(`<strong><div id='descModal'>Description:</strong> ${recarea.RecAreaDescription}`);
 
     // Append the Activities to the modal
-    $('#modal-content').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
+    $('#modal1-content').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
     recarea.ACTIVITY.forEach(function(activity){
-        $('#modal-content').append("<ul>");
-        $('#modal-content').append("<li id='activityTypeModal'>" + activity.ActivityName);
+        $('#modal1-content').append("<ul>");
+        $('#modal1-content').append("<li id='activityTypeModal'>" + activity.ActivityName);
     })
 
     // RECAREAADDRESS
     recarea.RECAREAADDRESS.forEach(function(address){
-        $('#modal-content').append("<strong><div id='addressHeadModal'>Address");
-        $('#modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress1);
-        $('#modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress2);
-        $('#modal-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
+        $('#modal1-content').append("<strong><div id='addressHeadModal'>Address");
+        $('#modal1-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress1);
+        $('#modal1-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress2);
+        $('#modal1-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
     })
 
 
@@ -56,7 +56,7 @@ export function retrieveSingleRecArea(recarea) {
     bookMarkItem = function(){
         if (recarea.bookmarked === false) {
         state.recreation.addBookmark(recarea);
-        $("#book-mark-btn").attr("i class","material-icons dp48");
+        // $("#book-mark-btn").attr("i class","material-icons dp48");
       console.log("This sets the bookmark");
         } else {
             $('#book-mark-btn').text("Unbookmark");           
