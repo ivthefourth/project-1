@@ -1,12 +1,15 @@
-/* Retrieve the data for a recreation area based on RecAreaID
+/* Retrieve the data for a recreation area 
 *  Display the data to a modal on the web page */
 
 import './recreation.css';
+import state from '../state/state';
 
+var bookMarkItem;
+var unsetBookMark;
 
 // display the data in a modal box
 export function retrieveSingleRecArea(recarea) {
-    $('.modal-content').empty();
+    $('#modal1-content').empty();
     // retrieve the data using recAreaId
     console.log(recarea);
 
@@ -48,29 +51,47 @@ export function retrieveSingleRecArea(recarea) {
         $('.modal-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
     })
 
+    // Append
+
+    // Set/Unset the bookmark item
+    bookMarkItem = function(){
+        if (recarea.bookmarked === false) {
+        state.recreation.addBookmark(recarea);
+        // $("#book-mark-btn").attr("i class='material-icons dp48"');
+        $("#book-mark-btn").text("star");
+        } else {
+            $('#book-mark-btn').text("Unbookmark");           
+            state.recreation.removeBookmark(recarea);
+            console.log("This unsets the bookmark");
+        }
+    }
+
+    // Remove the bookmark
+    // unsetBookMark = function(){
+    //     if (state.RecArea.bookedmarked == true) {
+    //         state.recreation.removeBookmark(recarea);
+    //         $('book-mark-btn').text("Unbookmark");
+    //     }
+    // }
+
     // Last step is to open the modal after everything is appended
-        $('.modal').modal('open');
+        $('#modal1').modal('open');
 
 }
 
+
 $(document).ready(function(){
 
-    $('.modal').modal({
+    $('#modal1').modal({
         inDuration: 300,
         startingTop: '40%', // Starting top style attribute
         endingTop: '10%'
     });
 
+    $('#book-mark-btn').click(function(){
+         bookMarkItem();
+    });
+
  });
 
- // export function displayRecAreaOnClick(recAreaId) {
- //    // var suggestSumId = $(".suggestionSummary").attr("id");
- //    // console.log(suggestSumId);
- //
- //       console.log(recAreaId);
- //     $(".suggestionSummary").on("click", function(){
- //         // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
- //         $('.modal').modal('open');
- //         $('.modal').append(retrieveSingleRecArea(recAreaId));
- //     })
- // }
+
