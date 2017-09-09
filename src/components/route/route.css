@@ -8,6 +8,7 @@
 	height: 25px;
 	padding-top: 0;
 	width: 25px;
+	background-color: #6fb384;
 }
 
 .btn-floating i {
@@ -21,8 +22,42 @@
 .inputContainer {
 	margin-top: 0px;
 	margin-bottom: 0px;
+	padding-bottom: 0px;
 }
 
-.inputContainer input {
+.inputContainer .route-choice {
 	margin-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.inputContainer .material-icons {
+	font-size: 20px;
+	color: gray;
+}
+
+.inputContainer {
+	margin-bottom: 0px;
+	position: relative;
+}
+
+.close-icon {
+	position: absolute;
+	line-height: 31px;
+	right: -3px;
+	bottom: 7px;
+}
+
+.move-icon {
+	position: absolute;
+	line-height: 31px;
+	left: 0px;
+	bottom: 7px;
+}
+
+.inputContainer .closeInputDiv,
+.inputContainer .moveInputDiv {
+	cursor: pointer;
+	height: 40px;
+	padding: 0px;
 }
