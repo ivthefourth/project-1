@@ -51,14 +51,13 @@ export function retrieveSingleRecArea(recarea) {
         $('.modal-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
     })
 
-    // Append
 
     // Set/Unset the bookmark item
     bookMarkItem = function(){
         if (recarea.bookmarked === false) {
         state.recreation.addBookmark(recarea);
-        // $("#book-mark-btn").attr("i class='material-icons dp48"');
-        $("#book-mark-btn").text("star");
+        $("#book-mark-btn").attr("i class","material-icons dp48");
+      console.log("This sets the bookmark");
         } else {
             $('#book-mark-btn').text("Unbookmark");           
             state.recreation.removeBookmark(recarea);
@@ -66,13 +65,6 @@ export function retrieveSingleRecArea(recarea) {
         }
     }
 
-    // Remove the bookmark
-    // unsetBookMark = function(){
-    //     if (state.RecArea.bookedmarked == true) {
-    //         state.recreation.removeBookmark(recarea);
-    //         $('book-mark-btn').text("Unbookmark");
-    //     }
-    // }
 
     // Last step is to open the modal after everything is appended
         $('#modal1').modal('open');
@@ -82,7 +74,7 @@ export function retrieveSingleRecArea(recarea) {
 
 $(document).ready(function(){
 
-    $('#modal1').modal({
+    $('.modal').modal({
         inDuration: 300,
         startingTop: '40%', // Starting top style attribute
         endingTop: '10%'
