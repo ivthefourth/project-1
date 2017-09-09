@@ -16,13 +16,25 @@ state.route.on("change", function (e){
 		for (let i = 0; i < e.val.length; i++) {
 			var location = e.val[i];
 			var inputContainer = $("<div>");
-			inputContainer.attr("class", "inputContainer");
+			inputContainer.attr("class", "row inputContainer");
 			let newInput = $("<input>").val(location.data.name + ' (' + location.data.formatted_address + ')');
+			newInput.attr("class", "col s10 m10 l10 route-choice");
+			let closeInput = "<i class='material-icons close-icon'>close</i>";
+			let moveInput = "<i class='material-icons move-icon'>dehaze</i>";
+			let closeInputDiv = $("<div class='col s1 m1 l1 closeInputDiv'>");
+			let moveInputDiv = $("<div class='col s1 m1 l1 moveInputDiv'>");
+			moveInputDiv.append(moveInput);
+			inputContainer.append(moveInputDiv);
 			inputContainer.append(newInput);
+			closeInputDiv.append(closeInput);
+			inputContainer.append(closeInputDiv);
+			closeInputDiv.click(function(){
+			 	state.route.remove(i);
+			});
 			newInput.focusout(function(){
-				if (newInput.val() == ""){
-					state.route.remove(i);
-				}
+			 	if (newInput.val() == ""){
+			 		state.route.remove(i);
+			 	}
 			});
 			newInput.keypress(function (e) {
  				var key = e.which;
@@ -32,10 +44,10 @@ state.route.on("change", function (e){
 			});
 			$("#destinations").append(inputContainer);
 			autofill(newInput[0], false, i);
-			$("#destinations").append("<br>");
+			//$("#destinations").append("<br>");
 		} 
 		$("#destinations").append("<div id='newbuttons'>");
-		$("#newbuttons").append("<a class='btn-floating btn-small waves-effect waves-light red' id='route-addBtn'><i class='material-icons'>add</i></a>");
+		$("#newbuttons").append("<a class='btn-floating btn-small waves-effect waves-light' id='route-addBtn'><i class='material-icons'>add</i></a>");
 		$("#newbuttons").append("<p id='route-newLocationText'>Add a New Stop</p>");
 		$("#route-addBtn").click(newInputField);
 	}
@@ -71,5 +83,5 @@ function newInputField() {
 	autofill(inputfield[0], true);
 }
 
-// create the "X" for places to be deleted.
 // transform a box into a dragable input field - call invert function
+// error handling
