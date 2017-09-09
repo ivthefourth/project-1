@@ -30,25 +30,25 @@ export function retrieveSingleRecArea(recarea) {
         id: "recUrlModal"});
 
     // Append the details of the recarea to the modal
-    $('.modal-content').append(recNameText,recPhoneText,recAreaEmail,recAreaLink);
+    $('#modal1-content').append(recNameText,recPhoneText,recAreaEmail,recAreaLink);
 
     // RecAreaDescription
 
-    $('.modal-content').append(`<strong><div id='descModal'>Description:</strong> ${recarea.RecAreaDescription}`);
+    $('#modal-content').append(`<strong><div id='descModal'>Description:</strong> ${recarea.RecAreaDescription}`);
 
     // Append the Activities to the modal
-    $('.modal-content').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
+    $('#modal-content').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
     recarea.ACTIVITY.forEach(function(activity){
-        $('.modal-content').append("<ul>");
-        $('.modal-content').append("<li id='activityTypeModal'>" + activity.ActivityName);
+        $('#modal-content').append("<ul>");
+        $('#modal-content').append("<li id='activityTypeModal'>" + activity.ActivityName);
     })
 
     // RECAREAADDRESS
     recarea.RECAREAADDRESS.forEach(function(address){
-        $('.modal-content').append("<strong><div id='addressHeadModal'>Address");
-        $('.modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress1);
-        $('.modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress2);
-        $('.modal-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
+        $('#modal-content').append("<strong><div id='addressHeadModal'>Address");
+        $('#modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress1);
+        $('#modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress2);
+        $('#modal-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
     })
 
 
