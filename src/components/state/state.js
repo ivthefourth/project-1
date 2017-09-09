@@ -24,11 +24,11 @@ class EventObject{
    }
 
    //trigger event listeners for given event
-   emit(event){
+   emit(event, prevEvent = {}){
       if(this.events[event] == undefined){
          throw new Error(`"${event}" event does not exist on ${this}`)
       }
-      else{
+      else if(!prevEvent.stopPropagation){
          let callbacks = this.events[event];
          let e = this.makeEvent(event);
          //execute all callbacks
@@ -56,6 +56,8 @@ class Interest extends EventObject{
 
       this.selected = false;
 
+      this.eventShouldPropagate = true;
+
       this.makeEvent = this.makeEvent.bind(this);
    }
    //toggles selected property
@@ -63,11 +65,21 @@ class Interest extends EventObject{
       this.selected = !this.selected;
       this.emit('change');
    }
+   update(selected, stopPropagation){
+      this.selected = selected;
+      if(stopPropagation)
+         this.eventShouldPropagate = false;
+      this.emit('change');
+      this.eventShouldPropagate = true;
+   }
    toString(){
       return "Interest";
    }
    makeEvent(){
-      return {val: this.selected};
+      return {
+         val: this.selected, 
+         stopPropagation: !this.eventShouldPropagate
+      };
    }
 }
 
@@ -132,14 +144,19 @@ class Route extends EventObject{
    }
 
    get origin(){
-      return this.path[0] || null;
+      return this.convertLocationForGoogle(this.path[0]);
    }
    get waypoints(){
       if( this.locationCount < 3){
          return null;
       }
       else{
-         return this.path.slice(1, this.locationCount - 1);
+         return this.path.slice(1, this.locationCount - 1).map((l) => {
+            return {
+               location: this.convertLocationForGoogle(l),
+               stopover: true
+            };
+         });
       }
    }
    get destination(){
@@ -147,7 +164,24 @@ class Route extends EventObject{
          return null;
       }
       else{
-         return this.path[this.locationCount - 1];
+         return this.convertLocationForGoogle(
+            this.path[this.locationCount - 1]
+         );
+      }
+   }
+
+   convertLocationForGoogle(location){
+      if(!location){
+         return null;
+      }
+      else if(location.type === 'place'){
+         return {placeId: location.data.place_id};
+      }
+      else if(location.type === 'recarea'){
+         return {
+            lat: location.data.RecAreaLatitude,
+            lng: location.data.RecAreaLongitude
+         }
       }
    }
 
@@ -165,9 +199,10 @@ class Route extends EventObject{
       this.path.splice(index, 0, location);
       this.emit('change');
    }
-   remove(index){
+   remove(index, dontEmit){
       this.path.splice(index, 1);
-      this.emit('change');
+      if( !dontEmit)
+         this.emit('change');
    }
    invert(){
       if( this.locationCount !== 2){
@@ -207,9 +242,78 @@ class Route extends EventObject{
 /*************\    
       Map    
 \*************/
+class Directions extends EventObject{
+   constructor(){
+      super(['change']);
+      this.legs = [];
+      //array of coordinates along directions route
+      this.routeCoords = [];
+      //array of coordinates that will be used for rec api calls
+      this.searchCoords = [];
+      this.origin = null;
+   }
+
+   update(route){
+      if(route == null){
+         this.legs = [];
+         this.routeCoords = [];
+         this.searchCoords = [];
+         this.origin = null;
+      }
+      else if(!route.legs){
+         this.legs = [];
+         this.routeCoords = [route];
+         this.searchCoords = [route];
+         this.origin = route;
+      }
+      else{
+         // this.legs = route.legs.map((leg) => {
+         //    return {
+         //       //store distance in miles (convert from meters)
+         //       distance: leg.distance.value * 0.000621371,
+         //       start: leg.start_location,
+         //       end: leg.end_location
+         //    }
+         // });
+         this.origin = route.legs[0].start_location;
+         this.routeCoords = route.overview_path;
+
+         //route coordinates separated by 100 miles
+         this.searchCoords = this.getCoordsByRadius(160934);
+         let dist = google.maps.geometry.spherical.computeDistanceBetween(
+            this.searchCoords[this.searchCoords.length - 1],
+            this.routeCoords[this.routeCoords.length - 1]
+         );
+         if(dist > 80467.2){
+            this.searchCoords.push(this.routeCoords[this.routeCoords.length - 1]);
+         }
+      }
+      this.emit('change');
+   }
+
+   getCoordsByRadius(radius){
+      if(!this.routeCoords.length) return null;
+
+      return this.routeCoords.reduce((arr, coord) => {
+         let distance = google.maps.geometry.spherical.computeDistanceBetween(
+            coord, arr[arr.length - 1]); 
+         if(distance > radius){
+            return arr.concat([coord]);
+         }
+         else{
+            return arr;
+         }
+      }, [this.origin]);
+   }
+
+   makeEvent(){
+      return {val: this};
+   }
+}
+
 class Map{
    constructor(){
-      ;
+      this.directions = new Directions();
    }
    toString(){
       return 'state.map';
@@ -277,7 +381,7 @@ class RecArea extends EventObject{
       this.inRoute = value;
       this.emit('inroute');
    }
-//setFocus > change
+   //setFocus > change
 
    makeEvent(event){
       console.warn(event);
@@ -356,8 +460,11 @@ class RecStatus extends EventObject{
 
       this.loadedActivities = {};
       this.filteredActivities = {};
+
+      this.loadedSearchCoords = [];
       //if the route changes, this should be true.
       this.shouldResetLoadedActivities = false;
+      this.shouldResetLoadedCoords = false;
    }
    update({loading, percentLoaded, shouldLoad, canLoad, firstLoad} = {}){
       let change = false;
@@ -407,6 +514,9 @@ class Recreation{
       this.filtered = new RecAreaCollection('filtered');
       this.bookmarked = new RecAreaCollection('bookmarked');
       this.inRoute = new RecAreaCollection('inRoute');
+
+      //searchRadius in meters
+      this.searchRadius = 80467.2;
 
       this.apiCall = recApiQuery;
 
@@ -458,7 +568,14 @@ class Recreation{
       if(this.status.shouldResetLoadedActivities){
          this.status.loadedActivities = {};
          this.status.shouldResetLoadedActivities = false;
+         //clear this.all???
       }
+      if(this.status.shouldResetLoadedCoords){
+         this.status.shouldResetLoadedCoords = false;
+         //clear this.all???
+      }
+      this.status.loadedSearchCoords = state.map.directions.searchCoords;
+
       var loaded = this.status.loadedActivities;
       var interests = state.interests.selected.reduce((idString, interest) => {
          //if we've already loaded recareas with this activity, don't add to activities
@@ -477,6 +594,7 @@ class Recreation{
             return idString + interest.id;
       }, '');
 
+
       var callback = function(response){
          this.addRecAreas(response.RECDATA);
          requestCount -= 1;
@@ -487,12 +605,12 @@ class Recreation{
       }.bind(this);
 
       //temporary... eventually change to along route
-      state.route.path.forEach((l) => {
+      state.map.directions.searchCoords.forEach((l) => {
          requestCount += 1;
          this.apiCall(
-            l.data.geometry.location.lat(),
-            l.data.geometry.location.lng(),
-            50,
+            l.lat(),
+            l.lng(),
+            100,
             interests,
             callback
          );
@@ -531,6 +649,7 @@ class State extends EventObject{
       this.recreation = new Recreation();
       this.route = new Route();
       this.interests = new Interests(interestList);
+      this.map = new Map();
    }
    
    //refactor this, use export and import from a separate file (not recreation.js)
