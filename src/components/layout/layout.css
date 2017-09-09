@@ -15,3 +15,7 @@
 #map {
 	top: 7px;
 }
+
+.nav-wrapper, .btn {
+	background: #6fb384;
+}
