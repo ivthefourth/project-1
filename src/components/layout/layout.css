@@ -5,13 +5,54 @@
 .layout{
    background: rebeccapurple;
 }
-.selected{color: blue;}
 
 .chip {
+	background: #e8e8e8;
 	cursor: pointer;
 	display: block;
+}
+.selected{
+	background: #6fb384 ;
 }
 
 #map {
 	top: 7px;
 }
+
+.nav-wrapper, .btn, .btn-floating {
+	background: #6fb384;
+	color: white;
+}
+
+.collapsible-body {
+	padding: 15px;
+}
+
+.collapsible-header {
+	background: #5F8A97;
+	color: white;
+}
+
+.center {
+	text-align: center;
+}
+
+.btn:hover {
+	background: #45955D;
+}
+
+.modal-content {
+	background: #CCE7D4;
+}
+
+#suggestions a {
+	color: #6fb384;
+}
+
+ #suggestions .indicator {
+ 	background: #6fb384;
+ }
+
+ .padding {
+ 	padding-top: 10px;
+ }

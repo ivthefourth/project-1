@@ -8,6 +8,7 @@
 
    <!-- jQuery -->
    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
    <!-- materialize -->
    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -22,7 +23,7 @@
       <div class="nav-wrapper">
         <a href="#" class="brand-logo center">Rec Ninja</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-           <li><a href="#">?</a></li>
+           <li><a class="waves-effect waves-light modal-trigger" href="#tutorial-modal"><i class="material-icons">help_outline</i></a></li>
         </ul>
      </div>
   </nav>
@@ -33,10 +34,11 @@
              <li>
                <div class="collapsible-header active">Interests</div>
                <div class="collapsible-body" id="interests">
-                  <div id="selected-interests"></div><br />
+                  <div id="selected-interests">Selected</div><br />
                   <div class="divider"></div><br />
+                  <div>Available</div>
                   <div id="unselected-interests"></div>
-                  <div><a class="waves-effect waves-light btn" id ="clear-interests">Clear Interests</a></div>
+                  <div class="center padding"><a class="waves-effect waves-light btn" id ="clear-interests">Clear Interests</a></div>
              </li>
              <li>
                <div class="collapsible-header active">Destinations</div>
@@ -55,19 +57,18 @@
              <li>
                <div class="collapsible-header active">Suggestions</div>
                <div class="collapsible-body" id="suggestions">
-                   <div class="row">
-                     <div class="col s12">
-                        <ul class="tabs">
+                   
+                   <ul class="tabs">
                           <li class="tab col s4"><a class="active" href="#filtered-container">All</a></li>
-                          <li class="tab col s4"><a href="#bookmarked">Bookmarked</a></li>
-                          <li class="tab col s4"><a href="#added-to-route">Added to Route</a></li>
+                          <li class="tab col s8"><a href="#bookmarked">Bookmarked</a></li>
                         </ul>
-                     </div>
-                     <div class="divider"></div>
-                     <div id="filtered-container">
-                       <div id="button-container"></div>
-                       <div id="filtered"></div>
-                     </div>
+                     
+                     <div class="row">
+                      <div class="col s12">
+                      <div id="filtered-container">
+                        <div id="button-container"></div>
+                        <div id="filtered"></div>
+                      </div>
                      <div id="bookmarked"></div>
                      <div id="added-to-route"></div>
                   </div>
@@ -83,10 +84,26 @@
 
      </div>
      <div class="modal-footer">
-       <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Bookmark</a>
-       <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+       <a href="#!" class="modal-action modal-close waves-effect btn btn-flat">Bookmark</a>
+       <a href="#!" class="modal-action modal-close waves-effect btn btn-flat">Close</a>
      </div>
    </div>
+
+   <div id="tutorial-modal" class="modal">
+    <div class="modal-content">
+      <h4>How it Works</h4>
+      <ol>
+        <li>Select all of your interests </li>
+        <li>Select your starting point</li>
+        <li>Select any other destinations that apply</li>
+        <li>Press the find recreation button</li>
+      </ol>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-action modal-close waves-effect btn btn-flat">Close</a>
+      <a href="#!" class="oops btn">Do Not Press</a>
+    </div>
+  </div>
 
 
 </body>
