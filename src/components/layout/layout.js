@@ -14,7 +14,17 @@ $(document).ready(function() {
 			$(newChip).click(function() {
 				state.interests.all[i].toggle();
 			});
+=========================
+			if (localStorage.getItem('interests') !== null) {
+				let interestsArray = JSON.parse(localStorage.getItem('interests'));
+				
 
+				if (interestsArray[i] === true ) {
+					state.interests.all[i].selected = true;
+					state.interests.emit('change');
+				}
+			}
+==========================
 		state.interests.all[i].on('change', function(e) {
 			if(e.val) {
 				newChip.addClass("selected");
@@ -49,6 +59,8 @@ $(document).ready(function() {
 		state.interests.emit('change');
 		console.log(state);
 	});
+
+
 
 	// var topic = "biking";
 
