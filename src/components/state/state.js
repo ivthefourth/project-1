@@ -733,7 +733,10 @@ class Recreation{
       //and the bounds to contain these points are larger than the 
       //current viewport, change the map viewport to show everything
       if(fitMap && data.length){
-         map.fitBounds(markerBounds);
+         if( markerBounds.equals(mapBounds) )
+            map.fitBounds(markerBounds, 0);
+         else
+            map.fitBounds(markerBounds);
       }
    }
 

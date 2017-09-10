@@ -111,3 +111,58 @@ map.addListener('idle', function(){
    state.recreation.filterAll();
 })
 
+$(document).ready(function(){
+   var slider = $('#radius-slider');
+   var circles = [];
+   slider.mousedown(function(){
+      //set radius from slider val
+      state.recreation.searchRadius = slider.val() * 1609.34;
+      let rad = state.recreation.searchRadius;
+      var coords = state.map.directions.getCoordsByRadius(rad);
+      if(coords){
+         coords.forEach((c) => {
+            let circle = new google.maps.Circle({
+               center: c,
+               radius: rad,
+               fillColor: 'blue',
+               fillOpacity: 0.33,
+               strokeColor: 'red',
+               strokeOpacity: 0,
+               map: map
+            });
+            circles.push(circle);
+         });
+      }
+   });
+   slider.mouseup(function(){
+      circles.forEach((c) => {
+         c.setMap(null);
+      })
+      circles = [];
+      state.recreation.filterAll();
+   });
+   slider.on('input', function(){
+      circles.forEach((c) => {
+         c.setMap(null);
+      })
+      circles = [];
+      state.recreation.searchRadius = slider.val() * 1609.34;
+      let rad = state.recreation.searchRadius;
+      var coords = state.map.directions.getCoordsByRadius(rad);
+      if(coords){
+         coords.forEach((c) => {
+            let circle = new google.maps.Circle({
+               center: c,
+               radius: rad,
+               fillColor: 'blue',
+               fillOpacity: 0.33,
+               strokeColor: 'red',
+               strokeOpacity: 0,
+               map: map
+            });
+            circles.push(circle);
+         });
+      }
+   });
+})
+
