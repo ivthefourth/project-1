@@ -3,9 +3,10 @@ import state from '../state/state';
 function showButton(status) {
    var container = $('#button-container');
    var text;
-   var btn = $('<button class="btn">')
+   var btn = $('<button class="btn center">')
       .text('Find Recreation')
       .click(state.recreation.search);
+   var icon = $('<i class="material-icons pink-text text-accent3"></i>').text('warning');
 
    var noInterest = !state.interests.selected.length;
    var noLocation = !state.route.locationCount;
@@ -23,6 +24,7 @@ function showButton(status) {
    }
    else if(status.val.firstLoad){
       text = 'Click the button to get started'
+      icon = null;
    }
    else if(noInterest){
       text = 'Select at least one interest to search for recreation areas';
@@ -34,11 +36,12 @@ function showButton(status) {
    }
    else{
       text = 'New recreation areas may be available.'
+      icon = null;
    }
 
    container.empty();
    if( status.val.shouldLoad || status.val.firstLoad || !status.val.canLoad){
-      container.append($('<p>').text(text), btn);
+      container.append($('<p>').text(text).prepend(icon), btn);
    }
    else if(status.val.loading){
       text = 'Loading recreation areas…'
