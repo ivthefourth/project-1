@@ -9,7 +9,6 @@ const directionsDisplay = new google.maps.DirectionsRenderer();
 directionsDisplay.setMap(map);
 
 let routeMarkers = [];
-let recAreaMarkers = [];
 
 state.route.on('change', function(e){
    //remove all markers
@@ -48,24 +47,33 @@ state.route.on('change', function(e){
    }
 })
 
+let recAreaMarkers = [];
 
 state.recreation.filtered.on('change', function(e){
-   console.log(e);
-   let bounds = new google.maps.LatLngBounds();
-   //remove all markers
-   recAreaMarkers.forEach((m) => {
-      m.setMap(null);
-   });
-   recAreaMarkers = [];
-
+   let markerMap = {};
+   let newMarkers = [];
    e.val.forEach((r) => {
-      let latLng = {
-         lat: r.RecAreaLatitude,
-         lng: r.RecAreaLongitude
-      };
-      addMarker(latLng, 'rec', r);
+      if(!r.marker){
+         r.addMarker();
+         r.marker.setMap(map);
+      }
+      else if(!r.markerDisplayed){
+         r.marker.setMap(map);
+      }
+      r.markerDisplayed = true;
+      markerMap[r.id] = true;
+      newMarkers.push(r);
    });
-})
+
+   //remove filtered out markers
+   recAreaMarkers.forEach((r) => {
+      if(!markerMap[r.id]){
+         r.marker.setMap(null);
+         r.markerDisplayed = false;
+      }
+   });
+   recAreaMarkers = newMarkers;
+});
 
 
 
@@ -99,13 +107,7 @@ function addMarker(location, type, area) {
    }
 }
 
-function makePreview(recArea){
-   return `
-   <strong>${recArea.RecAreaName}</strong>
-   `
-}
-
-map.addListener('resize', function(){
-   console.log('hey');
+map.addListener('idle', function(){
+   state.recreation.filterAll();
 })
 

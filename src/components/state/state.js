@@ -365,6 +365,8 @@ class RecArea extends EventObject{
       this.bookmarked = false;
       this.inRoute = false;
       this.focused = false;
+      this.marker = null;
+      this.markerDisplayed = false;
 
       this.showDetails = this.showDetails.bind(this);
    }
@@ -384,6 +386,33 @@ class RecArea extends EventObject{
       this.emit('inroute');
    }
    //setFocus > change
+
+   addMarker(){
+      let latLng = {
+         lat: this.RecAreaLatitude,
+         lng: this.RecAreaLongitude
+      };
+      this.marker = new google.maps.Marker({
+         position: latLng,
+         map: map
+      });
+      let info = new google.maps.InfoWindow({
+         content: this.makeMapPreview()
+      });
+      this.marker.addListener('mouseover', (e) => {
+         info.open(map, this.marker);
+      });
+      this.marker.addListener('mouseout', (e) => {
+         info.close();
+      });
+      this.marker.addListener('click', this.showDetails);
+   }
+
+   makeMapPreview(){
+      return `
+      <strong>${this.RecAreaName}</strong>
+      `
+   }
 
    makeEvent(event){
       console.warn(event);
@@ -621,7 +650,7 @@ class Recreation{
       this.status.update({shouldLoad: false, loading: true, firstLoad: false});
    }
 
-   filterAll(newLoad){
+   filterAll(fitMap){
       let markerBounds = new google.maps.LatLngBounds();
       var data;
       if(!state.interests.selected.length){
@@ -642,7 +671,7 @@ class Recreation{
          });
 
          //if it's not a new load, filter based on map viewport
-         if(!newLoad && !mapBounds.contains(coord)) {
+         if(!fitMap && !mapBounds.contains(coord)) {
             return false;
          }
 
@@ -684,7 +713,7 @@ class Recreation{
       //and the bounds to contain these points are larger than the 
       //current viewport, change the map viewport to show everything
       if( 
-         newLoad && 
+         fitMap && 
          data.length && 
          !markerBounds.contains(mapBounds.getNorthEast()) &&
          !markerBounds.contains(mapBounds.getSouthWest())
