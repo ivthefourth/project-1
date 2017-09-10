@@ -67,12 +67,12 @@ export function retrieveSingleRecArea(recarea) {
 
         if (recarea.bookmarked === false) {
         // state.recreation.addBookmark(recarea);
-        // $("#book-mark-btn").attr("i class","material-icons dp48");
-      console.log("This sets the bookmark");
+        $("#book-mark-btn").text("Bookmark");
+      console.log("The bookmark is not set");
         } else {
             $('#book-mark-btn').text("Unbookmark");           
             // state.recreation.removeBookmark(recarea);
-            console.log("This unsets the bookmark");
+            console.log("The bookmark is set");
         }
 
     // Last step is to open the modal after everything is appended
@@ -94,5 +94,4 @@ $(document).ready(function(){
     });
 
  });
-
 
