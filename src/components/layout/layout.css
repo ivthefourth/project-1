@@ -12,7 +12,7 @@
 	display: block;
 }
 .selected{
-	background: #6fb384 ;
+	background: rgba(111, 179, 132, 0.4);
 }
 
 #map {

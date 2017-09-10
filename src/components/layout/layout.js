@@ -9,7 +9,7 @@ $(document).ready(function() {
 		for (let i = 0; i < state.interests.all.length; i++) {
 			
 			let newChip = $('<div class="chip center"></div>');
-			$("#unselected-interests").append(newChip.text(state.interests.all[i].iconId));
+			$("#unselected-interests").append(newChip.text(state.interests.all[i].name));
 			
 			$(newChip).click(function() {
 				state.interests.all[i].toggle();
