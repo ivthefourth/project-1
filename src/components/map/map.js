@@ -64,11 +64,7 @@ state.recreation.filtered.on('change', function(e){
          lng: r.RecAreaLongitude
       };
       addMarker(latLng, 'rec', r);
-      bounds.extend(latLng);
    });
-   if( e.val.length){
-      map.fitBounds(bounds);
-   }
 })
 
 
@@ -109,5 +105,7 @@ function makePreview(recArea){
    `
 }
 
-
+map.addListener('resize', function(){
+   console.log('hey');
+})
 

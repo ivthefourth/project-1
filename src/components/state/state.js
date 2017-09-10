@@ -602,7 +602,7 @@ class Recreation{
          requestCount -= 1;
          if(requestCount === 0 ){
             this.status.update({loading: false});
-            this.filterAll();
+            this.filterAll(true);
          }
       }.bind(this);
 
@@ -621,20 +621,47 @@ class Recreation{
       this.status.update({shouldLoad: false, loading: true, firstLoad: false});
    }
 
-   filterAll(){
+   filterAll(newLoad){
+      let markerBounds = new google.maps.LatLngBounds();
       var data;
       if(!state.interests.selected.length){
          data = [];
-         console.log('NO INTERESTS');
       }
       else if(!state.route.locationCount){
          data = [];
-         console.log('NO LOCATION');
       }
       else{
          data = this.all.RECDATA;
       }
-      this.filtered.setData(data.filter((area) => {
+      const mapBounds = map.getBounds();
+      const filterCoords = state.map.directions.getCoordsByRadius(this.searchRadius);
+      data = data.filter((area) => {
+         var coord = new google.maps.LatLng({
+            lat: area.RecAreaLatitude,
+            lng: area.RecAreaLongitude
+         });
+
+         //if it's not a new load, filter based on map viewport
+         if(!newLoad && !mapBounds.contains(coord)) {
+            return false;
+         }
+
+         //filter based on proximity to route
+         var isAlongRoute = false;
+         for(let i = 0; i < filterCoords.length; i++){
+            let distance = google.maps.geometry.spherical.computeDistanceBetween(
+               filterCoords[i], coord);
+            if( distance < this.searchRadius){
+               isAlongRoute = true;
+               break;
+            }
+         }
+         if(!isAlongRoute) {
+            return false;
+         }
+
+
+         //filter based on selected activities
          var hasActivity = false;
          for( let i = 0; i < area.activities.length; i++){
             let activity = area.activities[i];
@@ -643,10 +670,27 @@ class Recreation{
                break;
             }
          }
-         if(!hasActivity) return false;
+         if(!hasActivity) {
+            return false;
+         }
 
+         markerBounds.extend(coord);
          return true;
-      }));
+      })
+
+      this.filtered.setData(data);
+
+      //if the filter is due to new load, and there are points,
+      //and the bounds to contain these points are larger than the 
+      //current viewport, change the map viewport to show everything
+      if( 
+         newLoad && 
+         data.length && 
+         !markerBounds.contains(mapBounds.getNorthEast()) &&
+         !markerBounds.contains(mapBounds.getSouthWest())
+      ){
+         map.fitBounds(markerBounds);
+      }
    }
 
    toString(){
