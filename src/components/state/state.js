@@ -364,11 +364,14 @@ class RecArea extends EventObject{
 
       this.bookmarked = false;
       this.inRoute = false;
-      this.focused = false;
+
       this.marker = null;
       this.markerDisplayed = false;
+      this.markerHighlighted = false;
 
       this.showDetails = this.showDetails.bind(this);
+      this.highlightMarker = this.highlightMarker.bind(this)
+      this.unHighlightMarker = this.unHighlightMarker.bind(this)
    }
    showDetails(){
       retrieveSingleRecArea(this);//need from elizabeth; use import and export 
@@ -386,6 +389,19 @@ class RecArea extends EventObject{
       this.emit('inroute');
    }
    //setFocus > change
+
+   highlightMarker(){
+      if(this.marker && !this.markerHighlighted){
+         this.marker.setAnimation(google.maps.Animation.BOUNCE);
+         this.markerHighlighted = true;
+      }
+   }
+   unHighlightMarker(){
+      if(this.marker && this.markerHighlighted){
+         this.marker.setAnimation(null);
+         this.markerHighlighted = false;
+      }
+   }
 
    addMarker(){
       let latLng = {
@@ -651,7 +667,10 @@ class Recreation{
    }
 
    filterAll(fitMap){
+      const mapBounds = map.getBounds();
       let markerBounds = new google.maps.LatLngBounds();
+      markerBounds.extend(mapBounds.getNorthEast());
+      markerBounds.extend(mapBounds.getSouthWest());
       var data;
       if(!state.interests.selected.length){
          data = [];
@@ -662,7 +681,6 @@ class Recreation{
       else{
          data = this.all.RECDATA;
       }
-      const mapBounds = map.getBounds();
       const filterCoords = state.map.directions.getCoordsByRadius(this.searchRadius);
       data = data.filter((area) => {
          var coord = new google.maps.LatLng({
@@ -712,12 +730,7 @@ class Recreation{
       //if the filter is due to new load, and there are points,
       //and the bounds to contain these points are larger than the 
       //current viewport, change the map viewport to show everything
-      if( 
-         fitMap && 
-         data.length && 
-         !markerBounds.contains(mapBounds.getNorthEast()) &&
-         !markerBounds.contains(mapBounds.getSouthWest())
-      ){
+      if(fitMap && data.length){
          map.fitBounds(markerBounds);
       }
    }
