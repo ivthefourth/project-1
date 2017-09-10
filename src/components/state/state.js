@@ -24,11 +24,11 @@ class EventObject{
    }
 
    //trigger event listeners for given event
-   emit(event){
+   emit(event, prevEvent = {}){
       if(this.events[event] == undefined){
          throw new Error(`"${event}" event does not exist on ${this}`)
       }
-      else{
+      else if(!prevEvent.stopPropagation){
          let callbacks = this.events[event];
          let e = this.makeEvent(event);
          //execute all callbacks
@@ -44,6 +44,7 @@ class EventObject{
    }
 }
 
+
 /*************\    
    Interests    
 \*************/
@@ -56,18 +57,31 @@ class Interest extends EventObject{
 
       this.selected = false;
 
+      this.eventShouldPropagate = true;
+
       this.makeEvent = this.makeEvent.bind(this);
+      this.toggle = this.toggle.bind(this);
    }
    //toggles selected property
    toggle(){
       this.selected = !this.selected;
       this.emit('change');
    }
+   update(selected, stopPropagation){
+      this.selected = selected;
+      if(stopPropagation)
+         this.eventShouldPropagate = false;
+      this.emit('change');
+      this.eventShouldPropagate = true;
+   }
    toString(){
       return "Interest";
    }
    makeEvent(){
-      return {val: this.selected};
+      return {
+         val: this.selected, 
+         stopPropagation: !this.eventShouldPropagate
+      };
    }
 }
 
@@ -100,6 +114,7 @@ class Interests extends EventObject{
       };
    }
 }
+
 
 /*************\    
      Route    
