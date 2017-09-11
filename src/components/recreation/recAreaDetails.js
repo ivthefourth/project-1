@@ -21,16 +21,30 @@ export function retrieveSingleRecArea(recarea) {
 
     var recAreaEmail = $("<div id='recEmailModal'>").text(recarea.RecAreaEmail);
 
-    var recAreaLinkTitle = recarea.LINK[0].Title;
-    var recAreaUrl = recarea.LINK[0].URL;
-    var recAreaLink = $("<a />", {
-        href: recAreaUrl,
-        text: recAreaLinkTitle,
-        target: "_blank",
-        id: "recUrlModal"});
+    // Check and see if the link array is empty or not 
+    if (recarea.LINK[0] != null) {
+        var recAreaLinkTitle = recarea.LINK[0].Title;
+        var recAreaUrl = recarea.LINK[0].URL;
+        var recAreaLink = $("<a />", {
+            href: recAreaUrl,
+            text: recAreaLinkTitle,
+            target: "_blank",
+            id: "recUrlModal"});
+    }
+
+            function telephoneCheck(strPhone){
+              // Check that the value we get is a phone number
+                var isPhone = new RegExp(/^\+?1?\s*?\(?\d{3}|\w{3}(?:\)|[-|\s])?\s*?\d{3}|\w{3}[-|\s]?\d{4}|\w{4}$/);
+                return isPhone.test(strPhone);
+                console.log("Phone # is: " + isPhone);
+            }
 
     // Append the details of the recarea to the modal
-    $('#modal1-content').append(recNameText,recPhoneText,recAreaEmail,recAreaLink);
+    // Checks whether a phone number matches a pattern before appending to the modal
+    if (telephoneCheck(recarea.RecAreaPhone) == true){    
+        $('#modal1-content').append(recNameText,recPhoneText,recAreaEmail,recAreaLink);
+    } else
+        $('#modal1-content').append(recNameText,recAreaEmail,recAreaLink);
 
     // RecAreaDescription
 
@@ -65,6 +79,15 @@ export function retrieveSingleRecArea(recarea) {
         }
     }
 
+        if (recarea.bookmarked === false) {
+        // state.recreation.addBookmark(recarea);
+        $("#book-mark-btn").text("Bookmark");
+      console.log("The bookmark is not set");
+        } else {
+            $('#book-mark-btn').text("Unbookmark");           
+            // state.recreation.removeBookmark(recarea);
+            console.log("The bookmark is set");
+        }
 
     // Last step is to open the modal after everything is appended
         $('#modal1').modal('open');
@@ -85,5 +108,4 @@ $(document).ready(function(){
     });
 
  });
-
 
