@@ -1,6 +1,7 @@
 import {retrieveSingleRecArea} from '../recreation/recAreaDetails';
 import {recApiQuery, interestList} from '../recreation/constants';
 import map from '../map/mapconstant';
+import distanceMatrix from '../map/distance';
 
 class EventObject{
    constructor(eventsArr){
@@ -226,15 +227,110 @@ class Route extends EventObject{
          this.add(areaLocation);
       }
       else if( this.locationCount === 2){
-         this.insert(areaLocation, 1);
+         if(this.path[1].type === 'place'){
+            this.insert(areaLocation, 1);
+         }
+         else{
+            //but what if path[0] is a recreation area??
+            let origin = this.convertLocationForGoogle(this.path[0]);
+            let destinations = [
+               this.convertLocationForGoogle(this.path[1]),
+               this.convertLocationForGoogle(areaLocation)
+            ]
+            var callback = function(response, status){
+               if(status === 'OK'){
+                  if(
+                     response.rows[0].elements[0].distance.value >
+                     response.rows[0].elements[1].distance.value
+                  ){
+                     this.insert(areaLocation, 1);
+                  }
+                  else{
+                     this.add(areaLocation);
+                  }
+               }
+               else{
+                  area.marker.setVisible(true);
+                  area.setInRoute(false);
+               }
+            }.bind(this);
+            distanceMatrix.getDistanceMatrix({
+               origins: [origin],
+               destinations: destinations,
+               travelMode: 'DRIVING'
+            }, callback);
+         }
       }
       else{
          let destinations = this.path.map((l) => {
-            if(l.type === 'place'){
-               return {placeId: l.data.place_id};
-            }
+            return this.convertLocationForGoogle(l);
          })
-         console.log(destinations);
+         let origin = this.convertLocationForGoogle(areaLocation);
+         var callback = function(response, status){
+            if(status === 'OK'){
+               let arr = response.rows[0].elements;
+               let closestIndex = 0;
+               let smallestDistance = arr[0].distance.value;
+               for(let i = 1; i < arr.length; i++){
+                  if( arr[i].distance.value < smallestDistance){
+                     closestIndex = i;
+                  }
+               }
+               //if it's closest to the starting location, 
+               //insert it right after the starting location
+               if(closestIndex === 0){
+                  this.insert(areaLocation, 1);
+               }
+               //otherwise, if it's not closest to the final location...
+               else if(closestIndex !== arr.length - 1){
+                  //insert it between the location it's closest to and the 
+                  //next/previous location (whichever is closer)
+                  if( 
+                     arr[closestIndex - 1].distance.value < 
+                     arr[closestIndex + 1].distance.value
+                  ){
+                     this.insert(areaLocation, closestIndex);
+                  }
+                  else{
+                     this.insert(areaLocation, closestIndex + 1);
+                  }
+               }
+               //otherwise, if it's closest to the last location
+               else{
+                  //if the last location is a recarea, see if this area
+                  //should be between the last and second to last locations
+                  //or after the last 
+                  if( this.path[this.locationCount - 1].type === 'recarea'){
+                     //if the distance between this area and the second to last 
+                     //location is less than the distance between the second
+                     //to last location and the last location
+                     if(
+                        arr[arr.length - 2].distance.value < 
+                        response.rows[1].elements[arr.length - 1].distance.value
+                     ){
+                        this.insert(areaLocation, closestIndex);
+                     }
+                     else{
+                        this.add(areaLocation);
+                     }
+                  }
+                  //otherwise, insert it before the final destination
+                  else{
+                     this.insert(areaLocation, this.locationCount - 1);;
+                  }
+
+               }
+            }
+            else{
+               area.setInRoute(false);
+               area.marker.setVisible(true);
+            }
+         }.bind(this);
+         distanceMatrix.getDistanceMatrix({
+            origins: [origin, destinations[destinations.length - 2]],
+            destinations: destinations,
+            travelMode: 'DRIVING'
+         }, callback);
       }
    }
    removeRecArea(id){
@@ -558,7 +654,7 @@ class Recreation{
       this.all = new RecAreaCollection('all');
       this.filtered = new RecAreaCollection('filtered');
       this.bookmarked = new RecAreaCollection('bookmarked');
-      this.inRoute = new RecAreaCollection('inRoute');
+      //this.inRoute = new RecAreaCollection('inRoute');
 
       //searchRadius in meters
       this.searchRadius = 80467.2;
@@ -593,17 +689,17 @@ class Recreation{
       }
    }
    addToRoute(area){
-      if(!this.inRoute.idMap[area.id]){
+      if(!area.inRoute){
          area.setInRoute(true);
-         this.inRoute.addData(area);
+         area.marker.setVisible(false);
          state.route.addRecArea(area);
       }
       //else could show toast saying it's already in route 
    }
    removeFromRoute(area){
-      if(this.inRoute.idMap[area.id]){
+      if(area.inRoute){
          area.setInRoute(false);
-         this.inRoute.remove(area);
+         area.marker.setVisible(true);
          //do stuff with route here
       }
    }

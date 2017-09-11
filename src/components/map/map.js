@@ -38,7 +38,7 @@ state.route.on('change', function(e){
          if (status == 'OK') {
             state.map.directions.update(result.routes[0]);
             directionsDisplay.setDirections(result);
-            console.log(result.routes[0])
+            console.log(result)
          }
          //else show some error toast?
       });
@@ -115,7 +115,7 @@ map.addListener('idle', function(){
 $(document).ready(function(){
    var slider = $('#radius-slider');
    var circles = [];
-   slider.mousedown(function(){
+   slider.on('mousedown focus', function(){
       //set radius from slider val
       state.recreation.searchRadius = slider.val() * 1609.34;
       let rad = state.recreation.searchRadius;
@@ -135,7 +135,7 @@ $(document).ready(function(){
          });
       }
    });
-   slider.mouseup(function(){
+   slider.on('mouseup focusout', function(){
       circles.forEach((c) => {
          c.setMap(null);
       })
