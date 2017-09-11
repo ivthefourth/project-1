@@ -26,6 +26,11 @@ import state from '../state/state';
             var recPhoneText = $("<li card-content>").text(recValAlias.RecAreaPhone);
 
 
+            if (telephoneCheck(recValAlias.RecAreaPhone) == true){
+                sugDivClass.append(recNameText, recPhoneText);
+            } else
+                sugDivClass.append(recNameText);
+
             //Get both the Title and URL values and create a link tag out of them
             // We're only grabbing the first instance of the LINK array
             if (recValAlias.LINK[0] != null) {
@@ -37,20 +42,18 @@ import state from '../state/state';
                     target: "_blank"});
 
                 var recAreaLinkP = $("<li card-content>").append(recAreaLink);
-            }
-
-            if (telephoneCheck(recValAlias.RecAreaPhone) == true){
-                sugDivClass.append(recNameText, recPhoneText);
-            } else
-                sugDivClass.append(recNameText, recAreaLinkP);
+                
+                sugDivClass.append(recAreaLinkP);
+            } else 
+                sugDivClass.append("<li card-content>");
 
             // Check and see if the link array is empty or not and append if not
-            if (recAreaUrl != null) {
-                sugDivClass.append(recAreaLinkP);
-                console.log("appending link");
-            } else
-            sugDivClass.append(recAreaLink);
-                console.log("NOT appending link");
+            // if (recAreaUrl != null) {
+            //     sugDivClass.append(recAreaLinkP);
+            //     console.log("appending link");
+            // } else
+            // sugDivClass.append(recAreaLink);
+            //     console.log("NOT appending link");
 
 
             $(filteredType).append(sugDivClass);
