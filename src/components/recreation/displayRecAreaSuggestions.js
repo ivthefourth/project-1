@@ -6,13 +6,12 @@ import state from '../state/state';
         // var breakDiv = "<div class=divider>";
         // $(filteredType).append(breakDiv);
 
-    function telephoneCheck(strPhone){
-        // Check that the value we get is a phone number
-        // var isPhone = new RegExp(/^\+?1?\s*?\(?\d{3}(?:\)|[-|\s])?\s*?\d{3}[-|\s]?\d{4}$/);
-        var isPhone = new RegExp(/^\+?1?\s*?\(?\d{3}|\w{3}(?:\)|[-|\s])?\s*?\d{3}|\w{3}[-|\s]?\d{4}|\w{4}$/);
-        return isPhone.test(strPhone);
-        console.log("Phone # is: " + isPhone);
-    }
+        function telephoneCheck(strPhone){
+            // Check that the value we get is a phone number
+            var isPhone = new RegExp(/^\+?1?\s*?\(?\d{3}|\w{3}(?:\)|[-|\s])?\s*?\d{3}|\w{3}[-|\s]?\d{4}|\w{4}$/);
+            return isPhone.test(strPhone);
+            console.log("Phone # is: " + isPhone);
+        }
 
         for (var i = 0; i <recdata.val.length; i++) {
 
@@ -29,22 +28,30 @@ import state from '../state/state';
 
             //Get both the Title and URL values and create a link tag out of them
             // We're only grabbing the first instance of the LINK array
-            var recAreaLinkTitle = recValAlias.LINK[0].Title;
-            var recAreaUrl = recValAlias.LINK[0].URL;
-            var recAreaLink = $("<a />", {
-                href: recAreaUrl,
-                text: recAreaLinkTitle,
-                target: "_blank"});
+            if (recValAlias.LINK[0] != null) {
+                var recAreaLinkTitle = recValAlias.LINK[0].Title;
+                var recAreaUrl = recValAlias.LINK[0].URL;
+                var recAreaLink = $("<a />", {
+                    href: recAreaUrl,
+                    text: recAreaLinkTitle,
+                    target: "_blank"});
 
-            var recAreaLinkP = $("<li card-content>").append(recAreaLink);
+                var recAreaLinkP = $("<li card-content>").append(recAreaLink);
+            }
 
             if (telephoneCheck(recValAlias.RecAreaPhone) == true){
-              sugDivClass.append(recNameText, recPhoneText, recAreaLinkP);
-
-        console.log("The answer is true");
+                sugDivClass.append(recNameText, recPhoneText);
             } else
                 sugDivClass.append(recNameText, recAreaLinkP);
-                console.log("The answer is false");
+
+            // Check and see if the link array is empty or not and append if not
+            if (recAreaUrl != null) {
+                sugDivClass.append(recAreaLinkP);
+                console.log("appending link");
+            } else
+            sugDivClass.append(recAreaLink);
+                console.log("NOT appending link");
+
 
             $(filteredType).append(sugDivClass);
 
