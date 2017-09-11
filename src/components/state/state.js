@@ -250,7 +250,6 @@ class Route extends EventObject{
                   }
                }
                else{
-                  area.marker.setVisible(true);
                   area.setInRoute(false);
                }
             }.bind(this);
@@ -323,7 +322,6 @@ class Route extends EventObject{
             }
             else{
                area.setInRoute(false);
-               area.marker.setVisible(true);
             }
          }.bind(this);
          distanceMatrix.getDistanceMatrix({
@@ -480,6 +478,7 @@ class RecArea extends EventObject{
    }
    setInRoute(/*boolean*/ value){
       this.inRoute = value;
+      this.marker.setVisible(!value);
       this.emit('inroute');
    }
    //setFocus > change
@@ -488,12 +487,18 @@ class RecArea extends EventObject{
       if(this.marker && !this.markerHighlighted){
          this.marker.setAnimation(google.maps.Animation.BOUNCE);
          this.markerHighlighted = true;
+         if(this.inRoute){
+            this.marker.setVisible(true);
+         }
       }
    }
    unHighlightMarker(){
       if(this.marker && this.markerHighlighted){
          this.marker.setAnimation(null);
          this.markerHighlighted = false;
+         if(this.inRoute){
+            this.marker.setVisible(false);
+         }
       }
    }
 
@@ -691,7 +696,6 @@ class Recreation{
    addToRoute(area){
       if(!area.inRoute){
          area.setInRoute(true);
-         area.marker.setVisible(false);
          state.route.addRecArea(area);
       }
       //else could show toast saying it's already in route 
@@ -699,7 +703,6 @@ class Recreation{
    removeFromRoute(area){
       if(area.inRoute){
          area.setInRoute(false);
-         area.marker.setVisible(true);
          //do stuff with route here
       }
    }
