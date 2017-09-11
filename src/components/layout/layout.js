@@ -14,18 +14,20 @@ $(document).ready(function() {
 			$(newChip).click(function() {
 				state.interests.all[i].toggle();
 			});
-=========================
+// =========================
+			if (localStorage.getItem('interests') !== null) {
+				state.interests.emit('change');
+			}
+// ==========================
+		state.interests.all[i].on('change', function(e) {
 			if (localStorage.getItem('interests') !== null) {
 				let interestsArray = JSON.parse(localStorage.getItem('interests'));
 				
 
-				if (interestsArray[i] === true ) {
+				if (interestsArray[state.interests.all[i].id] === true ) {
 					state.interests.all[i].selected = true;
-					state.interests.emit('change');
 				}
 			}
-==========================
-		state.interests.all[i].on('change', function(e) {
 			if(e.val) {
 				newChip.addClass("selected");
 				$("#selected-interests").append(newChip);
