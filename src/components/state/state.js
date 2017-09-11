@@ -221,16 +221,23 @@ class Route extends EventObject{
    }
 
    addRecArea(area){
-      ;
-      this.emit('change');
+      var areaLocation = new Location(area);
+      if( this.locationCount === 1){
+         this.add(areaLocation);
+      }
+      else if( this.locationCount === 2){
+         this.insert(areaLocation, 1);
+      }
+      else{
+         let destinations = this.path.map((l) => {
+            if(l.type === 'place'){
+               return {placeId: l.data.place_id};
+            }
+         })
+         console.log(destinations);
+      }
    }
    removeRecArea(id){
-      ;
-      this.emit('change');
-   }
-
-   //will "highlight" location at given index of path on the map
-   highlight(index){
       ;
    }
 
@@ -249,7 +256,6 @@ class Route extends EventObject{
 class Directions extends EventObject{
    constructor(){
       super(['change']);
-      this.legs = [];
       //array of coordinates along directions route
       this.routeCoords = [];
       //array of coordinates that will be used for rec api calls
@@ -259,26 +265,16 @@ class Directions extends EventObject{
 
    update(route){
       if(route == null){
-         this.legs = [];
          this.routeCoords = [];
          this.searchCoords = [];
          this.origin = null;
       }
       else if(!route.legs){
-         this.legs = [];
          this.routeCoords = [route];
          this.searchCoords = [route];
          this.origin = route;
       }
       else{
-         // this.legs = route.legs.map((leg) => {
-         //    return {
-         //       //store distance in miles (convert from meters)
-         //       distance: leg.distance.value * 0.000621371,
-         //       start: leg.start_location,
-         //       end: leg.end_location
-         //    }
-         // });
          this.origin = route.legs[0].start_location;
          this.routeCoords = route.overview_path;
 
@@ -600,8 +596,9 @@ class Recreation{
       if(!this.inRoute.idMap[area.id]){
          area.setInRoute(true);
          this.inRoute.addData(area);
-         //do stuff with route here
+         state.route.addRecArea(area);
       }
+      //else could show toast saying it's already in route 
    }
    removeFromRoute(area){
       if(this.inRoute.idMap[area.id]){

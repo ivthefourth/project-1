@@ -103,6 +103,7 @@ function isContained(arrA, radA, arrB, radB){
 }
 
 state.map.directions.on('change', function(e){
+   //make this constant 50 miles!
    var radius = state.recreation.searchRadius;
    var loadedSearchCoords = state.recreation.status.loadedSearchCoords;
    var newRouteCoords = e.val.getCoordsByRadius(radius);

@@ -38,6 +38,7 @@ state.route.on('change', function(e){
          if (status == 'OK') {
             state.map.directions.update(result.routes[0]);
             directionsDisplay.setDirections(result);
+            console.log(result.routes[0])
          }
          //else show some error toast?
       });
