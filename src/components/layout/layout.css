@@ -10,6 +10,10 @@
 	background: #e8e8e8;
 	cursor: pointer;
 	display: block;
+	max-height: 20px;
+	line-height: 20px;
+	padding: 0px;
+	margin-right: 0px;
 }
 .selected{
 	background: rgba(111, 179, 132, 0.4);

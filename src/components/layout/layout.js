@@ -15,19 +15,20 @@ $(document).ready(function() {
 				state.interests.all[i].toggle();
 			});
 // =========================
-			if (localStorage.getItem('interests') !== null) {
-				state.interests.emit('change');
-			}
-// ==========================
-		state.interests.all[i].on('change', function(e) {
-			if (localStorage.getItem('interests') !== null) {
-				let interestsArray = JSON.parse(localStorage.getItem('interests'));
+			// if (localStorage.getItem('interests') !== null) {
+			// 	state.interests.emit('change');
+			
+			// if (localStorage.getItem('interests') !== null) {
+			// 	let interestsArray = JSON.parse(localStorage.getItem('interests'));
 				
 
-				if (interestsArray[state.interests.all[i].id] === true ) {
-					state.interests.all[i].selected = true;
-				}
-			}
+			// 	if (interestsArray[state.interests.all[i].id] === true ) {
+			// 		state.interests.all[i].selected = true;
+			// 	}
+			// }
+// ==========================
+		state.interests.all[i].on('change', function(e) {
+			
 			if(e.val) {
 				newChip.addClass("selected");
 				$("#selected-interests").append(newChip);
@@ -62,17 +63,30 @@ $(document).ready(function() {
 		console.log(state);
 	});
 
+	state.route.on('change', function(e) {
+		var places_id = {};
+		var latitudeObj = {};
+		var longitudeObj = {};
+		var formattedNameObj = {};
+		var nameObj = {};
+		console.log(e);
+		let i = 0;
 
+		e.val.forEach(function(f) {
+			places_id[i] = f.data.place_id;
+			latitudeObj[i] = f.data.geometry.location.lat;
+			longitudeObj[i] = f.data.geometry.location.lng;
+			formattedNameObj[i] = f.data.formatted_address;
+			nameObj[i] = f.data.name;
+			i++;
+		});
+		localStorage.setItem('places_id', JSON.stringify(places_id));
+		localStorage.setItem('latitude', JSON.stringify(latitudeObj));
+		localStorage.setItem('longitude', JSON.stringify(longitudeObj));
+		localStorage.setItem('formattedName', JSON.stringify(formattedNameObj));
+		localStorage.setItem('name', JSON.stringify(nameObj));
 
-	// var topic = "biking";
-
-	// var queryURL = "https://emojipedia.org/search/?q=" + topic;
-
-	// $.ajax({
-	// 		url: queryURL,
-	// 		method: 'GET'
-	// 		}).done(function(response) {
-	// 			console.log(response);
+	});
 });
 
 
