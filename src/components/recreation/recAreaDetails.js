@@ -6,6 +6,7 @@ import state from '../state/state';
 
 var bookMarkItem;
 var unsetBookMark;
+var addRecToRoute;
 
 // display the data in a modal box
 export function retrieveSingleRecArea(recarea) {
@@ -69,24 +70,36 @@ export function retrieveSingleRecArea(recarea) {
     // Set/Unset the bookmark item
     bookMarkItem = function(){
         if (recarea.bookmarked === false) {
-        state.recreation.addBookmark(recarea);
-        // $("#book-mark-btn").attr("i class","material-icons dp48");
-      console.log("This sets the bookmark");
+          state.recreation.addBookmark(recarea);
         } else {
             $('#book-mark-btn').text("Unbookmark");           
             state.recreation.removeBookmark(recarea);
-            console.log("This unsets the bookmark");
         }
     }
 
         if (recarea.bookmarked === false) {
-        // state.recreation.addBookmark(recarea);
-        $("#book-mark-btn").text("Bookmark");
-      console.log("The bookmark is not set");
+            $("#book-mark-btn").text("Bookmark");
         } else {
-            $('#book-mark-btn').text("Unbookmark");           
-            // state.recreation.removeBookmark(recarea);
-            console.log("The bookmark is set");
+            $('#book-mark-btn').text("Unbookmark");         
+        }
+
+   // Need to add a button that adds the recarea to route
+
+    addRecToRoute = function() {
+        if(recarea.inRoute === false) {
+            state.recreation.addToRoute(recarea);
+            console.log("Add to the route");
+        } else {
+            $('#addToRouteBtn').text("Remove from Route");
+            state.recreation.removeFromRoute(recarea);
+            console.log("Removed from route");
+        }
+    }
+
+        if (recarea.inRoute === false) {
+            $('#addToRouteBtn').text("Add to Route");
+        } else {
+            $('#addToRouteBtn').text("Remove from Route");
         }
 
     // Last step is to open the modal after everything is appended
@@ -107,5 +120,19 @@ $(document).ready(function(){
          bookMarkItem();
     });
 
+    // Create button to add a route to the modal footer
+
+        var addToRouteButton = $("<a />", {
+            href: "#!",
+            text: "Add to Route",
+            class: "modal-action modal-close waves-effect btn btn-flat right",
+            id: "addToRouteBtn"});
+
+        $('.modal-footer').append(addToRouteButton);
+
+    $('#addToRouteBtn').click(function(){
+        addRecToRoute();
+    })
+ 
  });
 
