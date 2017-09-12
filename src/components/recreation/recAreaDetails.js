@@ -126,6 +126,7 @@ $(document).ready(function(){
             href: "#!",
             text: "Add to Route",
             class: "modal-action modal-close waves-effect btn btn-flat right",
+            style: "margin: 6px",
             id: "addToRouteBtn"});
 
         $('.modal-footer').append(addToRouteButton);

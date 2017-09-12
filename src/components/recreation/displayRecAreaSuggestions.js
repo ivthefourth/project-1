@@ -44,12 +44,13 @@ import state from '../state/state';
             $(filteredType).append(sugDivClass);
 
             sugDivClass.click(recValAlias.showDetails);
-        }
+            
+       }
 
-    if (recdata.val.length === 0){
-        $("#filtered-container").append("<div id='noneFound'>No recreation areas found.</div>");
-        console.log("No recreation areas found.");
-    }
+             if (recdata.val.length === 0){
+                $(filteredType).append("<div id='noneFound'>No recreation areas found.</div>");
+                console.log("No recreation areas found.");
+            }
 
      }
 
