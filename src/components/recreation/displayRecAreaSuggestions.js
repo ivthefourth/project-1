@@ -71,8 +71,3 @@ state.recreation.bookmarked.on("change", function(recdata){
         var filteredType = "#bookmarked";
         displayRecAreaSummary(recdata, filteredType);
 });
-state.recreation.inRoute.on("change",  function(recdata){
-
-        var filteredType = "#added-to-route";
-        displayRecAreaSummary(recdata, filteredType);
-});

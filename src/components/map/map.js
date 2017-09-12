@@ -1,13 +1,14 @@
 import './map.css';
 import state from '../state/state';
+import map from './mapconstant';
 
-const map = new google.maps.Map(document.getElementById('map'), {
-  center: {lat: 39.7642548, lng: -104.9951937},
-  zoom: 5
-});
+const directionsService = new google.maps.DirectionsService();
+const directionsDisplay = new google.maps.DirectionsRenderer();
+
+
+directionsDisplay.setMap(map);
 
 let routeMarkers = [];
-let recAreaMarkers = [];
 
 state.route.on('change', function(e){
    //remove all markers
@@ -16,48 +17,76 @@ state.route.on('change', function(e){
    });
    routeMarkers = [];
 
-   //add new markers
-   if(e.val.length === 1){
+   // //add new markers
+   if(state.route.locationCount === 1){
+      directionsDisplay.set('directions', null);
       map.fitBounds(e.val[0].data.geometry.viewport);
-      //addMarker(e.val[0].data.geometry.location);
+      addMarker(e.val[0].data.geometry.location, 'route');
+      //update route with one location
+      state.map.directions.update(e.val[0].data.geometry.location);
    }
-   else if(e.val.length){
-      // e.val.forEach((l) => {
-      //    addMarker(l.data.geometry.location);
-      // })
+   else if(state.route.locationCount){
+      //get directions
+      let request = {
+         origin: state.route.origin,
+         destination: state.route.destination,
+         travelMode: 'DRIVING'
+      }
+      if(state.route.waypoints)
+         request.waypoints = state.route.waypoints;
+      directionsService.route(request, function(result, status) {
+         if (status == 'OK') {
+            state.map.directions.update(result.routes[0]);
+            directionsDisplay.setDirections(result);
+            console.log(result)
+         }
+         //else show some error toast?
+      });
+   }
+   else{
+      state.map.directions.update(null);
    }
 })
 
+let recAreaMarkers = [];
 
 state.recreation.filtered.on('change', function(e){
-   console.log(e);
-   let bounds = new google.maps.LatLngBounds();
-   //remove all markers
-   recAreaMarkers.forEach((m) => {
-      m.setMap(null);
-   });
-   recAreaMarkers = [];
-
+   let markerMap = {};
+   let newMarkers = [];
    e.val.forEach((r) => {
-      let latLng = {
-         lat: r.RecAreaLatitude,
-         lng: r.RecAreaLongitude
-      };
-      addMarker(latLng, 'rec', r);
-      bounds.extend(latLng);
+      if(!r.marker){
+         r.addMarker();
+         r.marker.setMap(map);
+      }
+      else if(!r.markerDisplayed){
+         r.marker.setMap(map);
+      }
+      r.markerDisplayed = true;
+      markerMap[r.id] = true;
+      newMarkers.push(r);
    });
-   if( e.val.length){
-      map.fitBounds(bounds);
-   }
-})
+
+   //remove filtered out markers
+   recAreaMarkers.forEach((r) => {
+      if(!markerMap[r.id]){
+         r.marker.setMap(null);
+         r.markerDisplayed = false;
+      }
+   });
+   recAreaMarkers = newMarkers;
+});
 
 
 
 function addMarker(location, type, area) {
-   let marker = new google.maps.Marker({
+   let kwargs = {
       position: location,
       map: map
-   });
+   }
+   if(type === 'route'){
+      kwargs.label = 'A';
+   }
+   let marker = new google.maps.Marker(kwargs);
    if(area){
       let info = new google.maps.InfoWindow({content: makePreview(area)});
       marker.addListener('mouseover', (e) => {
@@ -79,8 +108,62 @@ function addMarker(location, type, area) {
    }
 }
 
-function makePreview(recArea){
-   return `
-   <strong>${recArea.RecAreaName}</strong>
-   `
-}
+map.addListener('idle', function(){
+   state.recreation.filterAll();
+})
+
+$(document).ready(function(){
+   var slider = $('#radius-slider');
+   var circles = [];
+   slider.on('mousedown focus', function(){
+      //set radius from slider val
+      state.recreation.searchRadius = slider.val() * 1609.34;
+      let rad = state.recreation.searchRadius;
+      var coords = state.map.directions.getCoordsByRadius(rad);
+      if(coords){
+         coords.forEach((c) => {
+            let circle = new google.maps.Circle({
+               center: c,
+               radius: rad,
+               fillColor: 'blue',
+               fillOpacity: 0.33,
+               strokeColor: 'red',
+               strokeOpacity: 0,
+               map: map
+            });
+            circles.push(circle);
+         });
+      }
+   });
+   slider.on('mouseup focusout', function(){
+      circles.forEach((c) => {
+         c.setMap(null);
+      })
+      circles = [];
+      state.recreation.filterAll();
+   });
+   slider.on('input', function(){
+      circles.forEach((c) => {
+         c.setMap(null);
+      })
+      circles = [];
+      state.recreation.searchRadius = slider.val() * 1609.34;
+      let rad = state.recreation.searchRadius;
+      var coords = state.map.directions.getCoordsByRadius(rad);
+      if(coords){
+         coords.forEach((c) => {
+            let circle = new google.maps.Circle({
+               center: c,
+               radius: rad,
+               fillColor: 'blue',
+               fillOpacity: 0.33,
+               strokeColor: 'red',
+               strokeOpacity: 0,
+               map: map
+            });
+            circles.push(circle);
+         });
+      }
+   });
+})
+
