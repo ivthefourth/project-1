@@ -68,3 +68,12 @@
 	right: 10px;
 	color: gray;
 }
+
+#font-size-12 {
+	font-size: 12px;
+	margin-bottom: 0px;
+}
+
+.range-field {
+	margin-top: 0px;
+}
