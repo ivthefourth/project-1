@@ -17,13 +17,14 @@ state.route.on("change", function (e){
 	} else {
 		for (let i = 0; i < e.val.length; i++) {
 			let location = e.val[i];
+			let newInput;
 			var inputContainer = $("<div>");
 			inputContainer.attr("class", "row inputContainer ui-state-default");
 			if (location.type == "place") {
-				let newInput = $("<input>").val(location.data.name + ' (' + location.data.formatted_address + ')');
+				newInput = $("<input>").val(location.data.name + ' (' + location.data.formatted_address + ')');
 			}
 			else {
-				let newInput = $("<input>").val(location.data.RecAreaName);
+				newInput = $("<input>").val(location.data.RecAreaName);
 			}
 			newInput.attr("class", "col s10 m10 l10 route-choice");
 			let closeInput = "<i class='material-icons close-icon'>close</i>";
