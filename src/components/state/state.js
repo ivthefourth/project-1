@@ -1,5 +1,7 @@
 import {retrieveSingleRecArea} from '../recreation/recAreaDetails';
 import {recApiQuery, interestList} from '../recreation/constants';
+import map from '../map/mapconstant';
+import distanceMatrix from '../map/distance';
 
 class EventObject{
    constructor(eventsArr){
@@ -147,14 +149,19 @@ class Route extends EventObject{
    }
 
    get origin(){
-      return this.path[0] || null;
+      return this.convertLocationForGoogle(this.path[0]);
    }
    get waypoints(){
       if( this.locationCount < 3){
          return null;
       }
       else{
-         return this.path.slice(1, this.locationCount - 1);
+         return this.path.slice(1, this.locationCount - 1).map((l) => {
+            return {
+               location: this.convertLocationForGoogle(l),
+               stopover: true
+            };
+         });
       }
    }
    get destination(){
@@ -162,7 +169,24 @@ class Route extends EventObject{
          return null;
       }
       else{
-         return this.path[this.locationCount - 1];
+         return this.convertLocationForGoogle(
+            this.path[this.locationCount - 1]
+         );
+      }
+   }
+
+   convertLocationForGoogle(location){
+      if(!location){
+         return null;
+      }
+      else if(location.type === 'place'){
+         return {placeId: location.data.place_id};
+      }
+      else if(location.type === 'recarea'){
+         return {
+            lat: location.data.RecAreaLatitude,
+            lng: location.data.RecAreaLongitude
+         }
       }
    }
 
@@ -180,9 +204,10 @@ class Route extends EventObject{
       this.path.splice(index, 0, location);
       this.emit('change');
    }
-   remove(index){
+   remove(index, dontEmit){
       this.path.splice(index, 1);
-      this.emit('change');
+      if( !dontEmit)
+         this.emit('change');
    }
    invert(){
       if( this.locationCount !== 2){
@@ -197,16 +222,116 @@ class Route extends EventObject{
    }
 
    addRecArea(area){
-      ;
-      this.emit('change');
+      var areaLocation = new Location(area);
+      if( this.locationCount === 1){
+         this.add(areaLocation);
+      }
+      else if( this.locationCount === 2){
+         if(this.path[1].type === 'place'){
+            this.insert(areaLocation, 1);
+         }
+         else{
+            //but what if path[0] is a recreation area??
+            let origin = this.convertLocationForGoogle(this.path[0]);
+            let destinations = [
+               this.convertLocationForGoogle(this.path[1]),
+               this.convertLocationForGoogle(areaLocation)
+            ]
+            var callback = function(response, status){
+               if(status === 'OK'){
+                  if(
+                     response.rows[0].elements[0].distance.value >
+                     response.rows[0].elements[1].distance.value
+                  ){
+                     this.insert(areaLocation, 1);
+                  }
+                  else{
+                     this.add(areaLocation);
+                  }
+               }
+               else{
+                  area.setInRoute(false);
+               }
+            }.bind(this);
+            distanceMatrix.getDistanceMatrix({
+               origins: [origin],
+               destinations: destinations,
+               travelMode: 'DRIVING'
+            }, callback);
+         }
+      }
+      else{
+         let destinations = this.path.map((l) => {
+            return this.convertLocationForGoogle(l);
+         })
+         let origin = this.convertLocationForGoogle(areaLocation);
+         var callback = function(response, status){
+            if(status === 'OK'){
+               let arr = response.rows[0].elements;
+               let closestIndex = 0;
+               let smallestDistance = arr[0].distance.value;
+               for(let i = 1; i < arr.length; i++){
+                  if( arr[i].distance.value < smallestDistance){
+                     closestIndex = i;
+                  }
+               }
+               //if it's closest to the starting location, 
+               //insert it right after the starting location
+               if(closestIndex === 0){
+                  this.insert(areaLocation, 1);
+               }
+               //otherwise, if it's not closest to the final location...
+               else if(closestIndex !== arr.length - 1){
+                  //insert it between the location it's closest to and the 
+                  //next/previous location (whichever is closer)
+                  if( 
+                     arr[closestIndex - 1].distance.value < 
+                     arr[closestIndex + 1].distance.value
+                  ){
+                     this.insert(areaLocation, closestIndex);
+                  }
+                  else{
+                     this.insert(areaLocation, closestIndex + 1);
+                  }
+               }
+               //otherwise, if it's closest to the last location
+               else{
+                  //if the last location is a recarea, see if this area
+                  //should be between the last and second to last locations
+                  //or after the last 
+                  if( this.path[this.locationCount - 1].type === 'recarea'){
+                     //if the distance between this area and the second to last 
+                     //location is less than the distance between the second
+                     //to last location and the last location
+                     if(
+                        arr[arr.length - 2].distance.value < 
+                        response.rows[1].elements[arr.length - 1].distance.value
+                     ){
+                        this.insert(areaLocation, closestIndex);
+                     }
+                     else{
+                        this.add(areaLocation);
+                     }
+                  }
+                  //otherwise, insert it before the final destination
+                  else{
+                     this.insert(areaLocation, this.locationCount - 1);;
+                  }
+
+               }
+            }
+            else{
+               area.setInRoute(false);
+            }
+         }.bind(this);
+         distanceMatrix.getDistanceMatrix({
+            origins: [origin, destinations[destinations.length - 2]],
+            destinations: destinations,
+            travelMode: 'DRIVING'
+         }, callback);
+      }
    }
    removeRecArea(id){
-      ;
-      this.emit('change');
-   }
-
-   //will "highlight" location at given index of path on the map
-   highlight(index){
       ;
    }
 
@@ -222,9 +347,67 @@ class Route extends EventObject{
 /*************\    
       Map    
 \*************/
+class Directions extends EventObject{
+   constructor(){
+      super(['change']);
+      //array of coordinates along directions route
+      this.routeCoords = [];
+      //array of coordinates that will be used for rec api calls
+      this.searchCoords = [];
+      this.origin = null;
+   }
+
+   update(route){
+      if(route == null){
+         this.routeCoords = [];
+         this.searchCoords = [];
+         this.origin = null;
+      }
+      else if(!route.legs){
+         this.routeCoords = [route];
+         this.searchCoords = [route];
+         this.origin = route;
+      }
+      else{
+         this.origin = route.legs[0].start_location;
+         this.routeCoords = route.overview_path;
+
+         //route coordinates separated by 100 miles
+         this.searchCoords = this.getCoordsByRadius(160934);
+         let dist = google.maps.geometry.spherical.computeDistanceBetween(
+            this.searchCoords[this.searchCoords.length - 1],
+            this.routeCoords[this.routeCoords.length - 1]
+         );
+         if(dist > 80467.2){
+            this.searchCoords.push(this.routeCoords[this.routeCoords.length - 1]);
+         }
+      }
+      this.emit('change');
+   }
+
+   getCoordsByRadius(radius){
+      if(!this.routeCoords.length) return null;
+
+      return this.routeCoords.reduce((arr, coord) => {
+         let distance = google.maps.geometry.spherical.computeDistanceBetween(
+            coord, arr[arr.length - 1]); 
+         if(distance > radius){
+            return arr.concat([coord]);
+         }
+         else{
+            return arr;
+         }
+      }, [this.origin]);
+   }
+
+   makeEvent(){
+      return {val: this};
+   }
+}
+
 class Map{
    constructor(){
-      ;
+      this.directions = new Directions();
    }
    toString(){
       return 'state.map';
@@ -273,9 +456,14 @@ class RecArea extends EventObject{
 
       this.bookmarked = false;
       this.inRoute = false;
-      this.focused = false;
+
+      this.marker = null;
+      this.markerDisplayed = false;
+      this.markerHighlighted = false;
 
       this.showDetails = this.showDetails.bind(this);
+      this.highlightMarker = this.highlightMarker.bind(this)
+      this.unHighlightMarker = this.unHighlightMarker.bind(this)
    }
    showDetails(){
       retrieveSingleRecArea(this);//need from elizabeth; use import and export 
@@ -290,9 +478,56 @@ class RecArea extends EventObject{
    }
    setInRoute(/*boolean*/ value){
       this.inRoute = value;
+      this.marker.setVisible(!value);
       this.emit('inroute');
    }
-//setFocus > change
+   //setFocus > change
+
+   highlightMarker(){
+      if(this.marker && !this.markerHighlighted){
+         this.marker.setAnimation(google.maps.Animation.BOUNCE);
+         this.markerHighlighted = true;
+         if(this.inRoute){
+            this.marker.setVisible(true);
+         }
+      }
+   }
+   unHighlightMarker(){
+      if(this.marker && this.markerHighlighted){
+         this.marker.setAnimation(null);
+         this.markerHighlighted = false;
+         if(this.inRoute){
+            this.marker.setVisible(false);
+         }
+      }
+   }
+
+   addMarker(){
+      let latLng = {
+         lat: this.RecAreaLatitude,
+         lng: this.RecAreaLongitude
+      };
+      this.marker = new google.maps.Marker({
+         position: latLng,
+         map: map
+      });
+      let info = new google.maps.InfoWindow({
+         content: this.makeMapPreview()
+      });
+      this.marker.addListener('mouseover', (e) => {
+         info.open(map, this.marker);
+      });
+      this.marker.addListener('mouseout', (e) => {
+         info.close();
+      });
+      this.marker.addListener('click', this.showDetails);
+   }
+
+   makeMapPreview(){
+      return `
+      <strong>${this.RecAreaName}</strong>
+      `
+   }
 
    makeEvent(event){
       console.warn(event);
@@ -371,8 +606,11 @@ class RecStatus extends EventObject{
 
       this.loadedActivities = {};
       this.filteredActivities = {};
+
+      this.loadedSearchCoords = [];
       //if the route changes, this should be true.
       this.shouldResetLoadedActivities = false;
+      this.shouldResetLoadedCoords = false;
    }
    update({loading, percentLoaded, shouldLoad, canLoad, firstLoad} = {}){
       let change = false;
@@ -421,7 +659,10 @@ class Recreation{
       this.all = new RecAreaCollection('all');
       this.filtered = new RecAreaCollection('filtered');
       this.bookmarked = new RecAreaCollection('bookmarked');
-      this.inRoute = new RecAreaCollection('inRoute');
+      //this.inRoute = new RecAreaCollection('inRoute');
+
+      //searchRadius in meters
+      this.searchRadius = 80467.2;
 
       this.apiCall = recApiQuery;
 
@@ -453,16 +694,15 @@ class Recreation{
       }
    }
    addToRoute(area){
-      if(!this.inRoute.idMap[area.id]){
+      if(!area.inRoute){
          area.setInRoute(true);
-         this.inRoute.addData(area);
-         //do stuff with route here
+         state.route.addRecArea(area);
       }
+      //else could show toast saying it's already in route 
    }
    removeFromRoute(area){
-      if(this.inRoute.idMap[area.id]){
+      if(area.inRoute){
          area.setInRoute(false);
-         this.inRoute.remove(area);
          //do stuff with route here
       }
    }
@@ -473,7 +713,14 @@ class Recreation{
       if(this.status.shouldResetLoadedActivities){
          this.status.loadedActivities = {};
          this.status.shouldResetLoadedActivities = false;
+         //clear this.all???
       }
+      if(this.status.shouldResetLoadedCoords){
+         this.status.shouldResetLoadedCoords = false;
+         //clear this.all???
+      }
+      this.status.loadedSearchCoords = state.map.directions.searchCoords;
+
       var loaded = this.status.loadedActivities;
       var interests = state.interests.selected.reduce((idString, interest) => {
          //if we've already loaded recareas with this activity, don't add to activities
@@ -492,22 +739,23 @@ class Recreation{
             return idString + interest.id;
       }, '');
 
+
       var callback = function(response){
          this.addRecAreas(response.RECDATA);
          requestCount -= 1;
          if(requestCount === 0 ){
             this.status.update({loading: false});
-            this.filterAll();
+            this.filterAll(true);
          }
       }.bind(this);
 
       //temporary... eventually change to along route
-      state.route.path.forEach((l) => {
+      state.map.directions.searchCoords.forEach((l) => {
          requestCount += 1;
          this.apiCall(
-            l.data.geometry.location.lat(),
-            l.data.geometry.location.lng(),
-            50,
+            l.lat(),
+            l.lng(),
+            100,
             interests,
             callback
          );
@@ -516,8 +764,49 @@ class Recreation{
       this.status.update({shouldLoad: false, loading: true, firstLoad: false});
    }
 
-   filterAll(){
-      this.filtered.setData(this.all.RECDATA.filter((area) => {
+   filterAll(fitMap){
+      const mapBounds = map.getBounds();
+      let markerBounds = new google.maps.LatLngBounds();
+      markerBounds.extend(mapBounds.getNorthEast());
+      markerBounds.extend(mapBounds.getSouthWest());
+      var data;
+      if(!state.interests.selected.length){
+         data = [];
+      }
+      else if(!state.route.locationCount){
+         data = [];
+      }
+      else{
+         data = this.all.RECDATA;
+      }
+      const filterCoords = state.map.directions.getCoordsByRadius(this.searchRadius);
+      data = data.filter((area) => {
+         var coord = new google.maps.LatLng({
+            lat: area.RecAreaLatitude,
+            lng: area.RecAreaLongitude
+         });
+
+         //if it's not a new load, filter based on map viewport
+         if(!fitMap && !mapBounds.contains(coord)) {
+            return false;
+         }
+
+         //filter based on proximity to route
+         var isAlongRoute = false;
+         for(let i = 0; i < filterCoords.length; i++){
+            let distance = google.maps.geometry.spherical.computeDistanceBetween(
+               filterCoords[i], coord);
+            if( distance < this.searchRadius){
+               isAlongRoute = true;
+               break;
+            }
+         }
+         if(!isAlongRoute) {
+            return false;
+         }
+
+
+         //filter based on selected activities
          var hasActivity = false;
          for( let i = 0; i < area.activities.length; i++){
             let activity = area.activities[i];
@@ -526,10 +815,25 @@ class Recreation{
                break;
             }
          }
-         if(!hasActivity) return false;
+         if(!hasActivity) {
+            return false;
+         }
 
+         markerBounds.extend(coord);
          return true;
-      }));
+      })
+
+      this.filtered.setData(data);
+
+      //if the filter is due to new load, and there are points,
+      //and the bounds to contain these points are larger than the 
+      //current viewport, change the map viewport to show everything
+      if(fitMap && data.length){
+         if( markerBounds.equals(mapBounds) )
+            map.fitBounds(markerBounds, 0);
+         else
+            map.fitBounds(markerBounds);
+      }
    }
 
    toString(){
@@ -546,6 +850,7 @@ class State extends EventObject{
       this.recreation = new Recreation();
       this.route = new Route();
       this.interests = new Interests(interestList);
+      this.map = new Map();
    }
    
    //refactor this, use export and import from a separate file (not recreation.js)

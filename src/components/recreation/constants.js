@@ -1,7 +1,7 @@
 export var interestList = [
     {"ActivityName": "BIKING",
      "ActivityID": 5,
-     "Emoji": "A"
+     "Emoji": "🚴"
     },
     {"ActivityName": "CLIMBING",
      "ActivityID": 7,

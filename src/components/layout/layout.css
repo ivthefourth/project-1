@@ -10,9 +10,13 @@
 	background: #e8e8e8;
 	cursor: pointer;
 	display: block;
+	max-height: 20px;
+	line-height: 20px;
+	padding: 0px;
+	margin-right: 0px;
 }
 .selected{
-	background: #6fb384 ;
+	background: rgba(111, 179, 132, 0.4);
 }
 
 #map {
@@ -26,6 +30,8 @@
 
 .collapsible-body {
 	padding: 15px;
+	max-height: 80vh;
+	overflow: auto;
 }
 
 .collapsible-header {
@@ -42,7 +48,7 @@
 }
 
 .modal-content {
-	background: #fcfdfc;
+	background: #dfeadf;
 }
 
 #suggestions a {
@@ -56,3 +62,9 @@
  .padding {
  	padding-top: 10px;
  }
+.fixed {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	color: gray;
+}
