@@ -1,12 +1,15 @@
-/* Retrieve the data for a recreation area based on RecAreaID
+/* Retrieve the data for a recreation area 
 *  Display the data to a modal on the web page */
 
 import './recreation.css';
+import state from '../state/state';
 
+var bookMarkItem;
+var unsetBookMark;
 
 // display the data in a modal box
 export function retrieveSingleRecArea(recarea) {
-    $('.modal-content').empty();
+    $('#modal1-content').empty();
     // retrieve the data using recAreaId
     console.log(recarea);
 
@@ -27,31 +30,47 @@ export function retrieveSingleRecArea(recarea) {
         id: "recUrlModal"});
 
     // Append the details of the recarea to the modal
-    $('.modal-content').append(recNameText,recPhoneText,recAreaEmail,recAreaLink);
+    $('#modal1-content').append(recNameText,recPhoneText,recAreaEmail,recAreaLink);
 
     // RecAreaDescription
 
-    $('.modal-content').append(`<strong><div id='descModal'>Description:</strong> ${recarea.RecAreaDescription}`);
+    $('#modal1-content').append(`<strong><div id='descModal'>Description:</strong> ${recarea.RecAreaDescription}`);
 
     // Append the Activities to the modal
-    $('.modal-content').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
+    $('#modal1-content').append("<strong><div id='activityModalHead' class='collection-header'>Activities</div>");
     recarea.ACTIVITY.forEach(function(activity){
-        $('.modal-content').append("<ul>");
-        $('.modal-content').append("<li id='activityTypeModal'>" + activity.ActivityName);
+        $('#modal1-content').append("<ul>");
+        $('#modal1-content').append("<li id='activityTypeModal'>" + activity.ActivityName);
     })
 
     // RECAREAADDRESS
     recarea.RECAREAADDRESS.forEach(function(address){
-        $('.modal-content').append("<strong><div id='addressHeadModal'>Address");
-        $('.modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress1);
-        $('.modal-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress2);
-        $('.modal-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
+        $('#modal1-content').append("<strong><div id='addressHeadModal'>Address");
+        $('#modal1-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress1);
+        $('#modal1-content').append("<div class='addressModal'>" + address.RecAreaStreetAddress2);
+        $('#modal1-content').append(`<div class='addressModal'> ${address.City}, ${address.AddressStateCode} ${address.PostalCode}`);
     })
 
+
+    // Set/Unset the bookmark item
+    bookMarkItem = function(){
+        if (recarea.bookmarked === false) {
+        state.recreation.addBookmark(recarea);
+        // $("#book-mark-btn").attr("i class","material-icons dp48");
+      console.log("This sets the bookmark");
+        } else {
+            $('#book-mark-btn').text("Unbookmark");           
+            state.recreation.removeBookmark(recarea);
+            console.log("This unsets the bookmark");
+        }
+    }
+
+
     // Last step is to open the modal after everything is appended
-        $('.modal').modal('open');
+        $('#modal1').modal('open');
 
 }
+
 
 $(document).ready(function(){
 
@@ -61,16 +80,10 @@ $(document).ready(function(){
         endingTop: '10%'
     });
 
+    $('#book-mark-btn').click(function(){
+         bookMarkItem();
+    });
+
  });
 
- // export function displayRecAreaOnClick(recAreaId) {
- //    // var suggestSumId = $(".suggestionSummary").attr("id");
- //    // console.log(suggestSumId);
- //
- //       console.log(recAreaId);
- //     $(".suggestionSummary").on("click", function(){
- //         // the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
- //         $('.modal').modal('open');
- //         $('.modal').append(retrieveSingleRecArea(recAreaId));
- //     })
- // }
+
