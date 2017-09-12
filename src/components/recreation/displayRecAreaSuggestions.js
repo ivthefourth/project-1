@@ -17,8 +17,6 @@ import state from '../state/state';
 
             var recValAlias = recdata.val[i];
 
-            var recResults = JSON.stringify(recdata);
-
             var sugDivClass = $("<ul class='suggestionSummary card' id='areaId-" + recValAlias.id + "'>");
 
             var recNameText = $("<strong><li card-title>").text(recValAlias.RecAreaName);
