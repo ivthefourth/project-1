@@ -331,8 +331,14 @@ class Route extends EventObject{
          }, callback);
       }
    }
-   removeRecArea(id){
-      ;
+   removeRecArea(area){
+      for(let i = 0; i < this.path.length; i++){
+         console.log(this.path[i].data, area, this.path[i].data === area);
+         if(this.path[i].data === area){
+            this.remove(i);
+            break;
+         }
+      };
    }
 
    makeEvent(){
@@ -703,7 +709,7 @@ class Recreation{
    removeFromRoute(area){
       if(area.inRoute){
          area.setInRoute(false);
-         //do stuff with route here
+         state.route.removeRecArea(area);
       }
    }
 
