@@ -45,12 +45,10 @@ $(document).ready(function() {
 
 	state.interests.on('change', function(e) {
 		var interests = {};
-		console.log(e.val.selected);
 
 		e.val.selected.forEach(function(interest) {
 			interests[interest.id] = true;
 		});
-		console.log(interests);
 		localStorage.setItem('interests', JSON.stringify(interests));
 	});
 
@@ -60,7 +58,6 @@ $(document).ready(function() {
 			clear.update(false, true);
 		});
 		state.interests.emit('change');
-		console.log(state);
 	});
 
 	state.route.on('change', function(e) {
@@ -69,7 +66,7 @@ $(document).ready(function() {
 		var longitudeObj = {};
 		var formattedNameObj = {};
 		var nameObj = {};
-		console.log(e);
+
 		let i = 0;
 
 		e.val.forEach(function(f) {
@@ -86,6 +83,11 @@ $(document).ready(function() {
 		localStorage.setItem('formattedName', JSON.stringify(formattedNameObj));
 		localStorage.setItem('name', JSON.stringify(nameObj));
 
+	});
+	$(".destination-input").on('focus', function() {
+		if ($("#interests-header").hasClass('active')) {
+			$("#interests-header").click();
+		}
 	});
 });
 
