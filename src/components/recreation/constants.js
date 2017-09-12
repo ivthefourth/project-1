@@ -27,8 +27,8 @@ export var interestList = [
       "ActivityID": 24,
       "Emoji": "A"
     },
-    {"ActivityName": "SWIMMING",
-     "ActivityID": 106,
+    {"ActivityName": "WATER SPORTS",
+     "ActivityID": 25,
      "Emoji": "A"
     },
     {"ActivityName": "WILDLIFE VIEWING",
