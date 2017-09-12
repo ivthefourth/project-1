@@ -89,7 +89,9 @@ function autofill(input, add, index){
 				state.route.insert(place, index);
 			}
 		} else {
-			Materialize.toast('Please select from the drop-down menu below your input.', 2500);
+			if (place.name != ""){
+				Materialize.toast('Select from the drop-down menu.', 4000, "rounded");
+			}
 		}
 	});
 }
