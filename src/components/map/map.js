@@ -26,6 +26,16 @@ state.route.on('change', function(e){
          //update route with one location
          state.map.directions.update(e.val[0].data.geometry.location);
       }
+      else if(state.route.path[0].data.RecAreaName){
+         let coords = new google.maps.LatLng({
+            lat: e.val[0].data.RecAreaLatitude,
+            lng: e.val[0].data.RecAreaLongitude
+         });
+         state.map.directions.update(coords);
+         map.setCenter(coords);
+         map.setZoom(8);
+         addMarker(coords, 'route');
+      }
       else{
          let coords = new google.maps.LatLng({
             lat: e.val[0].data.lat,

@@ -224,7 +224,7 @@ class Route extends EventObject{
 
    addRecArea(area){
       var areaLocation = new Location(area);
-      if( this.locationCount === 1){
+      if( this.locationCount <= 1){
          this.add(areaLocation);
       }
       else if( this.locationCount === 2){
@@ -485,7 +485,9 @@ class RecArea extends EventObject{
    }
    setInRoute(/*boolean*/ value){
       this.inRoute = value;
-      this.marker.setVisible(!value);
+      if(this.marker){
+         this.marker.setVisible(!value);
+      }
       this.emit('inroute');
    }
    //setFocus > change

@@ -43,14 +43,6 @@ $(document).ready(function() {
 
 	addChip();
 
-	state.interests.on('change', function(e) {
-		var interests = {};
-
-		e.val.selected.forEach(function(interest) {
-			interests[interest.id] = true;
-		});
-		localStorage.setItem('interests', JSON.stringify(interests));
-	});
 
 	$("#clear-interests").click(function() {
 	
