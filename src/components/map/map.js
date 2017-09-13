@@ -7,6 +7,7 @@ const directionsDisplay = new google.maps.DirectionsRenderer();
 
 
 directionsDisplay.setMap(map);
+directionsDisplay.setPanel(document.getElementById('directions-container'));
 
 let routeMarkers = [];
 
@@ -143,6 +144,8 @@ map.addListener('idle', function(){
 })
 
 $(document).ready(function(){
+   $('#directions-modal').modal();
+
    var slider = $('#radius-slider');
    var circles = [];
    slider.on('mousedown focus', function(){
