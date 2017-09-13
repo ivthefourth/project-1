@@ -45,6 +45,8 @@ import state from '../state/state';
 
             sugDivClass.click(recValAlias.showDetails);
             
+            sugDivClass.hover(recValAlias.highlightMarker, recValAlias.unHighlightMarker);
+
        }
 
              if (recdata.val.length === 0){
@@ -52,9 +54,8 @@ import state from '../state/state';
                 console.log("No recreation areas found.");
             }
 
+
      }
-
-
 
 state.recreation.filtered.on("change",  function(recdata){
 
