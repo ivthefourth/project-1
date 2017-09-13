@@ -1,17 +1,58 @@
 import './route.css';
 import state from '../state/state';
 
+$(function() {
+  $( ".sortable" ).sortable({
+    revert: true, 
+    stop: function() {
+      var children = inputSection.children();
+      var checker = 0;
+      var stateLocation;
+      var listLocation;
+      for (let i = 0; i < children.length; i++) {
+      	console.log(children[i].dataset.number);
+      	listLocation = children[i].dataset.number;
+      	if (listLocation != checker){
+	      	if (listLocation > checker+1){
+						stateLocation = state.route.path[listLocation].data;
+						state.route.remove(listLocation, true);
+						state.route.insert(stateLocation, i);
+	    			console.log("remove at " + listLocation + " and insertion at " + i); 
+	      	} else if (listLocation == checker+1){
+	      		checker++;
+	      	} else if (listLocation < checker-1){
+	    			console.log("remove at " + listLocation + " and insertion at " + i); 
+	    			stateLocation = state.route.path[listLocation].data;
+	    			state.route.remove(listLocation, true);
+						state.route.insert(stateLocation, i);
+	      	}
+	      }
+      	checker++;
+      }
+      console.log(inputSection.children());
+    }
+  });
+
+});
+
 var options = {
   componentRestrictions: {country: 'us'}
 };
 
-newInputField();
+var inputSection = $("<div>");
+var buttonSection = $("<div>");
 
-$("#destinations").attr("class", "sortable");
+inputSection.attr("class", "sortable");
+
+$("#destinations").append(inputSection);
+$("#destinations").append(buttonSection);
+
+newInputField();
 
 state.route.on("change", function (e){
 	var path = e.val;
-	$("#destinations").empty();
+	inputSection.empty();
+	buttonSection.empty();
 	if (path.length == 0) {
 		newInputField();
 	} else {
@@ -20,6 +61,7 @@ state.route.on("change", function (e){
 			let newInput;
 			var inputContainer = $("<div>");
 			inputContainer.attr("class", "row inputContainer ui-state-default");
+			inputContainer.attr("data-number", i);
 			if (location.type == "place") {
 				newInput = $("<input>").val(location.data.name + ' (' + location.data.formatted_address + ')');
 			}
@@ -58,22 +100,15 @@ state.route.on("change", function (e){
 					state.route.remove(i);
 				}
 			});
-			$("#destinations").append(inputContainer);
+			inputSection.append(inputContainer);
 			autofill(newInput[0], false, i);
 		} 
-		$("#destinations").append("<div id='newbuttons'>");
+		buttonSection.append("<div id='newbuttons'>");
 		$("#newbuttons").append("<a class='btn-floating btn-small waves-effect waves-light' id='route-addBtn'><i class='material-icons'>add</i></a>");
 		$("#newbuttons").append("<p id='route-newLocationText'>Add a New Stop</p>");
 		$("#route-addBtn").click(newInputField);
 	}
 });
-
-$(function() {
-  $( ".sortable" ).sortable({
-    revert: true
-  });
-  $( "div" ).disableSelection();
-} );
 
 // Applied autofill code to the new input fields and sends input to state object
 function autofill(input, add, index){
@@ -90,7 +125,7 @@ function autofill(input, add, index){
 			}
 		} else {
 			if (place.name != ""){
-				Materialize.toast('Select from the drop-down menu.', 4000, "rounded");
+				Materialize.toast('Select from the drop-down menu.', 4000, "rounded trevortoast");
 			}
 		}
 	});
@@ -100,13 +135,14 @@ function autofill(input, add, index){
 function newInputField() {
 	$("#newbuttons").remove();
 	var inputfield = $("<input>");
-	$("#destinations").append(inputfield);
+	buttonSection.append(inputfield);
 	inputfield.addClass("destination-input");
 	if (state.route.locationCount == 0) {
 		inputfield.attr("placeholder", "Starting Location: ");
 	}
 	else {
 		inputfield.attr("placeholder", "Next Stop: ");
+		inputfield.focus();
 	}
 	autofill(inputfield[0], true);
 }
