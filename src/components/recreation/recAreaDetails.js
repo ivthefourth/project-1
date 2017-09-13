@@ -129,7 +129,7 @@ $(document).ready(function(){
             style: "margin: 6px",
             id: "addToRouteBtn"});
 
-        $('.modal-footer').append(addToRouteButton);
+        $('#rec-area-detail-modal-footer').append(addToRouteButton);
 
     $('#addToRouteBtn').click(function(){
         addRecToRoute();

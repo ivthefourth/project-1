@@ -1,5 +1,6 @@
 import state from '../state/state';
 
+
     export function displayRecAreaSummary(recdata, filteredType) {
         $(filteredType).empty();
 
@@ -45,16 +46,23 @@ import state from '../state/state';
 
             sugDivClass.click(recValAlias.showDetails);
             
+            sugDivClass.hover(recValAlias.highlightMarker, recValAlias.unHighlightMarker);
+
        }
 
-             if (recdata.val.length === 0){
-                $(filteredType).append("<div id='noneFound'>No recreation areas found.</div>");
-                console.log("No recreation areas found.");
-            }
-
+    if (recdata.val.length === 0){   
+         if (filteredType === "#filtered"){
+            $(filteredType).append("<div id='noneFound'>No recreation areas found.</div>");
+         } else if (filteredType === "#bookmarked") {
+            $(filteredType).append("<div style='text-align:center' id='no-bookmark'>Nothing bookmarked.</div>");
+        }
      }
+    }
 
 
+$(document).ready(function(){
+        $("#bookmarked").append("<div style='text-align:center' id='no-bookmark'>Nothing bookmarked.</div>");
+});
 
 state.recreation.filtered.on("change",  function(recdata){
 
