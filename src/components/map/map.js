@@ -20,10 +20,23 @@ state.route.on('change', function(e){
    // //add new markers
    if(state.route.locationCount === 1){
       directionsDisplay.set('directions', null);
-      map.fitBounds(e.val[0].data.geometry.viewport);
-      addMarker(e.val[0].data.geometry.location, 'route');
-      //update route with one location
-      state.map.directions.update(e.val[0].data.geometry.location);
+      if(state.route.path[0].data.geometry){
+         map.fitBounds(e.val[0].data.geometry.viewport);
+         addMarker(e.val[0].data.geometry.location, 'route');
+         //update route with one location
+         state.map.directions.update(e.val[0].data.geometry.location);
+      }
+      else{
+         let coords = new google.maps.LatLng({
+            lat: e.val[0].data.lat,
+            lng: e.val[0].data.lng
+         });
+         console.log(e.val[0]);
+         state.map.directions.update(coords);
+         map.setCenter(coords);
+         map.setZoom(8);
+         addMarker(coords, 'route');
+      }
    }
    else if(state.route.locationCount){
       //get directions

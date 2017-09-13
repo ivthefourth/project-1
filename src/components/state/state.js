@@ -123,7 +123,7 @@ class Interests extends EventObject{
 \*************/
 class Location{
    constructor(object){
-      if( object instanceof RecArea){
+      if( object.hasOwnProperty('RecAreaName')){
           this.type = 'recarea';
       }
       else if(object.hasOwnProperty('place_id')){
@@ -190,12 +190,13 @@ class Route extends EventObject{
       }
    }
 
-   add(location){
+   add(location, dontEmit){
       if (!(location instanceof Location)){
          location = new Location(location);
       }
       this.path.push(location);
-      this.emit('change');
+      if( !dontEmit)
+         this.emit('change');
    }
    insert(location, index){
       if (!(location instanceof Location)){
@@ -553,6 +554,9 @@ class RecAreaCollection extends EventObject{
    addData(recdata){
       let change = false;
       if( !(recdata instanceof Array)){
+         if( !(recdata instanceof RecArea) ){
+            recdata = new RecArea(recdata);
+         }
          recdata = [recdata];
       }
       recdata.forEach(function(area){
