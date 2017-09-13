@@ -10,18 +10,15 @@ $(function() {
       var stateLocation;
       var listLocation;
       for (let i = 0; i < children.length; i++) {
-      	console.log(children[i].dataset.number);
       	listLocation = children[i].dataset.number;
       	if (listLocation != checker){
 	      	if (listLocation > checker+1){
 						stateLocation = state.route.path[listLocation].data;
 						state.route.remove(listLocation, true);
 						state.route.insert(stateLocation, i);
-	    			console.log("remove at " + listLocation + " and insertion at " + i); 
 	      	} else if (listLocation == checker+1){
 	      		checker++;
 	      	} else if (listLocation < checker-1){
-	    			console.log("remove at " + listLocation + " and insertion at " + i); 
 	    			stateLocation = state.route.path[listLocation].data;
 	    			state.route.remove(listLocation, true);
 						state.route.insert(stateLocation, i);
@@ -29,7 +26,6 @@ $(function() {
 	      }
       	checker++;
       }
-      console.log(inputSection.children());
     }
   });
 
