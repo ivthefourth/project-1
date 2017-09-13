@@ -28,6 +28,7 @@ state.route.on('change', function(e){
       else{
          return{
             type: 'recarea',
+            id: l.data.id,
             RecAreaName: l.data.RecAreaName,
             RecAreaLatitude: l.data.RecAreaLatitude,
             RecAreaLongitude: l.data.RecAreaLongitude
@@ -57,14 +58,43 @@ function loadStorage(){
    state.interests.emit('change');
 
    var route = JSON.parse(localStorage.getItem('route')) || [];
-   route.forEach((l) => {
-      state.route.add(l, true);
+   var routeArr = [];
+   let requestCount = 0; 
+   var routeCallback = function(index, response){
+      requestCount -= 1;
+      if(response.RecAreaID){
+         state.recreation.all.addData(response);
+         let area = state.recreation.all.RECDATA.find((r) => {
+            return r.id == response.RecAreaID;
+         });
+         area.setInRoute(true);
+         routeArr[index] = state.route.getLocationObject(area);
+      }
+      if(requestCount === 0){
+         state.route.setData(routeArr);
+      }
+   }
+   route.forEach((location, index) => {
+      if(location.type === 'place'){
+         routeArr[index] = state.route.getLocationObject(location);
+      }
+      else{
+         requestCount += 1;
+         recApiById(location.id, routeCallback.bind(null, index));
+      }
    });
-   state.route.emit('change');
+   if(requestCount === 0){
+         state.route.setData(routeArr);
+   }
+}
 
-   let requestCount = 0
+function getBookmarks(){
+   if(hasLoaded) return;
+   hasLoaded = true;
+   console.log('get bookmarks');
+   let requestCount = 0;
    var bookmarked = JSON.parse(localStorage.getItem('bookmarked')) || [];
-   var callback = function(response){
+   var bookmarkCallback = function(response){
       requestCount -= 1;
       if(response.RecAreaID){
          state.recreation.all.addData(response);
@@ -79,8 +109,15 @@ function loadStorage(){
    }
    bookmarked.forEach((b) => {
       requestCount += 1;
-      recApiById(b, callback);
+      recApiById(b, bookmarkCallback);
    });
+}
+
+//make sure this is set false if they choose not to load storage!
+var hasStorage = localStorage.getItem('has-stored') === 'true';
+var hasLoaded = false;
+if( hasStorage){
+   state.map.directions.on('change', getBookmarks);
 }
 
 window.loadStorage = loadStorage;

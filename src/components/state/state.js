@@ -221,6 +221,14 @@ class Route extends EventObject{
          this.emit('change');
       }
    }
+   setData(arr){
+      this.path = arr;
+      this.emit('change');
+   }
+
+   getLocationObject(location){
+      return new Location(location);
+   }
 
    addRecArea(area){
       var areaLocation = new Location(area);
