@@ -54,3 +54,14 @@ export function recApiQuery(latitudeVal,longitudeVal,radiusVal,activityVal,callb
         })
         .done(callback);
 }
+
+export function recApiById(id, callback) {
+
+    var recQueryURL = "https://ridb.recreation.gov/api/v1/recareas/" + id + ".json?apikey=2C1B2AC69E1945DE815B69BBCC9C7B19&full"
+
+        $.ajax({
+            url: recQueryURL,
+            method: "GET"
+        })
+        .done(callback);
+}

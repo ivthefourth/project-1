@@ -25,6 +25,10 @@ function showButton(status) {
    else if(status.val.firstLoad){
       text = 'Click the button to get started'
       icon = null;
+      btn.addClass('pulse');
+      setTimeout(function(){
+         btn.removeClass('pulse');
+      }, 500);
    }
    else if(noInterest){
       text = 'Select at least one interest to search for recreation areas';
@@ -37,6 +41,10 @@ function showButton(status) {
    else{
       text = 'New recreation areas may be available.'
       icon = null;
+      btn.addClass('pulse');
+      setTimeout(function(){
+         btn.removeClass('pulse');
+      }, 500);
    }
 
    container.empty();

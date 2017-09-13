@@ -110,7 +110,7 @@ export function retrieveSingleRecArea(recarea) {
 
 $(document).ready(function(){
 
-    $('.modal').modal({
+    $('#modal1').modal({
         inDuration: 300,
         startingTop: '40%', // Starting top style attribute
         endingTop: '10%'
