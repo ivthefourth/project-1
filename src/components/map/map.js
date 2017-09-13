@@ -49,6 +49,12 @@ state.route.on('change', function(e){
       }
    }
    else if(state.route.locationCount){
+      if(state.route.shouldZoomMap){
+         directionsDisplay.set('preserveViewport', false);
+      }
+      else{
+         directionsDisplay.set('preserveViewport', true);
+      }
       //get directions
       let request = {
          origin: state.route.origin,
@@ -64,6 +70,7 @@ state.route.on('change', function(e){
             console.log(result)
          }
          //else show some error toast?
+         state.route.shouldZoomMap = true;
       });
    }
    else{

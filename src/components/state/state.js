@@ -143,6 +143,7 @@ class Route extends EventObject{
    constructor(){
       super(['change']);
       this.path = [];
+      this.shouldZoomMap = true;
    }
    get locationCount(){
       return this.path.length;
@@ -231,6 +232,7 @@ class Route extends EventObject{
    }
 
    addRecArea(area){
+      this.shouldZoomMap = false;
       var areaLocation = new Location(area);
       if( this.locationCount <= 1){
          this.add(areaLocation);
@@ -341,6 +343,7 @@ class Route extends EventObject{
       }
    }
    removeRecArea(area){
+      this.shouldZoomMap = false;
       for(let i = 0; i < this.path.length; i++){
          console.log(this.path[i].data, area, this.path[i].data === area);
          if(this.path[i].data === area){

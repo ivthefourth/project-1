@@ -59,7 +59,7 @@ function loadStorage(){
 
    var route = JSON.parse(localStorage.getItem('route')) || [];
    var routeArr = [];
-   let requestCount = 0; 
+   let requestCount = 0;
    var routeCallback = function(index, response){
       requestCount -= 1;
       if(response.RecAreaID){
@@ -117,6 +117,7 @@ function getBookmarks(){
 var hasStorage = localStorage.getItem('has-stored') === 'true';
 var hasLoaded = false;
 if( hasStorage){
+   console.log('has storage');
    state.map.directions.on('change', getBookmarks);
 }
 
