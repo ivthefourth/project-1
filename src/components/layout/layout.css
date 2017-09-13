@@ -10,8 +10,8 @@
 	background: #e8e8e8;
 	cursor: pointer;
 	display: block;
-	max-height: 20px;
-	line-height: 20px;
+	max-height: 2em;
+	line-height: 2em;
 	padding: 0px;
 	margin-right: 0px;
 }
@@ -51,11 +51,15 @@
 	background: #dfeadf;
 }
 
-#suggestions a {
+.tabs .tab a {
 	color: #6fb384;
 }
 
- #suggestions .indicator {
+.tabs .tab a.active {
+	color: #6fb384;
+}
+
+ .tabs .indicator {
  	background: #6fb384;
  }
 
