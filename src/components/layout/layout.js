@@ -52,6 +52,15 @@ $(document).ready(function() {
 		state.interests.emit('change');
 	});
 
+
+	$('#tutorial-modal').modal({
+	  inDuration: 300,
+	  startingTop: '40%', // Starting top style attribute
+	  endingTop: '10%'
+	});
+
 });
+
+
 
 

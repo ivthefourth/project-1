@@ -48,7 +48,17 @@ state.recreation.bookmarked.on('change', function(e){
    localStorage.setItem('has-stored', 'true');
 })
 
+function resetStorage(){
+   hasLoaded = true;
+   localStorage.setItem('has-stored', null);
+   localStorage.setItem('bookmarked', null);
+   localStorage.setItem('route', null);
+   localStorage.setItem('interests', null);
+   $('#storage-modal').modal('close');
+}
+
 function loadStorage(){
+   if(hasLoaded) return;
    var interests = JSON.parse(localStorage.getItem('interests')) || {};
    state.interests.all.forEach((a) => {
       if(interests[a.id]){
@@ -91,6 +101,7 @@ function loadStorage(){
 function getBookmarks(){
    if(hasLoaded) return;
    hasLoaded = true;
+   $('#storage-modal').modal('close');
    console.log('get bookmarks');
    let requestCount = 0;
    var bookmarked = JSON.parse(localStorage.getItem('bookmarked')) || [];
@@ -122,3 +133,17 @@ if( hasStorage){
 }
 
 window.loadStorage = loadStorage;
+
+$(document).ready(function(){
+   $('#storage-modal').modal({
+      dismissible: false,
+      inDuration: 300,
+      startingTop: '40%', // Starting top style attribute
+      endingTop: '10%'
+   });
+   if(hasStorage){
+      $('#storage-modal').modal('open');
+      $('#new-session').click(resetStorage);
+      $('#continue-session').click(loadStorage);
+   }
+});
