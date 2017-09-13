@@ -1,7 +1,13 @@
 import './route.css';
 import state from '../state/state';
 
+var tooltip = $(
+	'<span class= "route-tooltip" data-tooltip="Select from the drop-down menu." data-position="right">'
+);
+tooltip.tooltip({delay: 50});
+
 $(function() {
+
   $( ".sortable" ).sortable({
     revert: true, 
     stop: function() {
@@ -13,15 +19,19 @@ $(function() {
       	listLocation = children[i].dataset.number;
       	if (listLocation != checker){
 	      	if (listLocation > checker+1){
+						tooltip.mouseleave();
+						tooltip.detach();
 						stateLocation = state.route.path[listLocation].data;
 						state.route.remove(listLocation, true);
 						state.route.insert(stateLocation, i);
 	      	} else if (listLocation == checker+1){
 	      		checker++;
 	      	} else if (listLocation < checker-1){
+					tooltip.mouseleave();
+					tooltip.detach();
 	    			stateLocation = state.route.path[listLocation].data;
 	    			state.route.remove(listLocation, true);
-						state.route.insert(stateLocation, i);
+					state.route.insert(stateLocation, i);
 	      	}
 	      }
       	checker++;
@@ -36,7 +46,7 @@ var options = {
 };
 
 var inputSection = $("<div>");
-var buttonSection = $("<div>");
+var buttonSection = $('<div class="route-btn-container">');
 
 inputSection.attr("class", "sortable");
 
@@ -78,6 +88,8 @@ state.route.on("change", function (e){
 				if (location.type === "recarea"){
 			 		state.route.path[i].data.setInRoute(false);
 				}
+				tooltip.mouseleave();
+				tooltip.detach();
 			 	state.route.remove(i);
 			});
 			newInput.focusout(function(){
@@ -85,6 +97,8 @@ state.route.on("change", function (e){
 			 		if (location.type === "recarea"){
 			 			state.route.path[i].data.setInRoute(false);
 					}
+					tooltip.mouseleave();
+					tooltip.detach();
 			 		state.route.remove(i);
 			 	}
 			});
@@ -93,11 +107,13 @@ state.route.on("change", function (e){
 			 		if (location.type === "recarea"){
 			 			state.route.path[i].data.setInRoute(false);
 					}
+					tooltip.mouseleave();
+					tooltip.detach();
 					state.route.remove(i);
 				}
 			});
 			inputSection.append(inputContainer);
-			autofill(newInput[0], false, i);
+			autofill(newInput[0], inputContainer, false, i);
 		} 
 		buttonSection.append("<div id='newbuttons'>");
 		$("#newbuttons").append("<a class='btn-floating btn-small waves-effect waves-light' id='route-addBtn'><i class='material-icons'>add</i></a>");
@@ -107,21 +123,26 @@ state.route.on("change", function (e){
 });
 
 // Applied autofill code to the new input fields and sends input to state object
-function autofill(input, add, index){
+function autofill(input, container, add, index){
 	var autocomplete = new google.maps.places.Autocomplete(input, options);
 	autocomplete.addListener('place_changed', function (){
 		var place = autocomplete.getPlace();
 		if (place.place_id){
 			if (add){
+				tooltip.mouseleave();
+				tooltip.detach();
 				state.route.add(place);
 			}
 			else {
+				tooltip.mouseleave();
+				tooltip.detach();
 				state.route.remove(index, true);
 				state.route.insert(place, index);
 			}
 		} else {
 			if (place.name != ""){
-				Materialize.toast('Select from the drop-down menu.', 4000, "rounded trevortoast");
+				container.append(tooltip);
+				tooltip.mouseenter();
 			}
 		}
 	});
@@ -140,7 +161,7 @@ function newInputField() {
 		inputfield.attr("placeholder", "Next Stop: ");
 		inputfield.focus();
 	}
-	autofill(inputfield[0], true);
+	autofill(inputfield[0], buttonSection, true);
 }
 
 // transform a box into a dragable input field - call invert function

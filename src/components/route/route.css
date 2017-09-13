@@ -24,6 +24,7 @@
 	margin-bottom: 0px;
 	padding-bottom: 0px;
 	background-color: white;
+	position: relative;
 }
 
 .inputContainer .route-choice {
@@ -73,4 +74,14 @@
 	position: fixed;
 	top: 100px !important;
 	left: 38%;
+}
+
+.route-btn-container{
+	position: relative;
+}
+
+.route-tooltip{
+	position: absolute;
+	top: 20px;
+	right: 0;
 }
