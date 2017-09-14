@@ -53,7 +53,7 @@
 
 .tabs .tab a {
 	color: #6fb384;
-}
+	text-overflow: auto; }
 
 .tabs .tab a.active {
 	color: #6fb384;
