@@ -36,3 +36,9 @@
     margin-left: 5%;
 
 }
+
+#noneFound {
+    text-align: center;
+    font-size: 16px;
+    margin-top: 5%;
+}

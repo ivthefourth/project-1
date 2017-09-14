@@ -123,7 +123,7 @@ class Interests extends EventObject{
 \*************/
 class Location{
    constructor(object){
-      if( object instanceof RecArea){
+      if( object.hasOwnProperty('RecAreaName')){
           this.type = 'recarea';
       }
       else if(object.hasOwnProperty('place_id')){
@@ -143,6 +143,7 @@ class Route extends EventObject{
    constructor(){
       super(['change']);
       this.path = [];
+      this.shouldZoomMap = true;
    }
    get locationCount(){
       return this.path.length;
@@ -190,12 +191,13 @@ class Route extends EventObject{
       }
    }
 
-   add(location){
+   add(location, dontEmit){
       if (!(location instanceof Location)){
          location = new Location(location);
       }
       this.path.push(location);
-      this.emit('change');
+      if( !dontEmit)
+         this.emit('change');
    }
    insert(location, index){
       if (!(location instanceof Location)){
@@ -220,10 +222,19 @@ class Route extends EventObject{
          this.emit('change');
       }
    }
+   setData(arr){
+      this.path = arr;
+      this.emit('change');
+   }
+
+   getLocationObject(location){
+      return new Location(location);
+   }
 
    addRecArea(area){
+      this.shouldZoomMap = false;
       var areaLocation = new Location(area);
-      if( this.locationCount === 1){
+      if( this.locationCount <= 1){
          this.add(areaLocation);
       }
       else if( this.locationCount === 2){
@@ -331,8 +342,15 @@ class Route extends EventObject{
          }, callback);
       }
    }
-   removeRecArea(id){
-      ;
+   removeRecArea(area){
+      this.shouldZoomMap = false;
+      for(let i = 0; i < this.path.length; i++){
+         console.log(this.path[i].data, area, this.path[i].data === area);
+         if(this.path[i].data === area){
+            this.remove(i);
+            break;
+         }
+      };
    }
 
    makeEvent(){
@@ -478,7 +496,9 @@ class RecArea extends EventObject{
    }
    setInRoute(/*boolean*/ value){
       this.inRoute = value;
-      this.marker.setVisible(!value);
+      if(this.marker){
+         this.marker.setVisible(!value);
+      }
       this.emit('inroute');
    }
    //setFocus > change
@@ -553,6 +573,9 @@ class RecAreaCollection extends EventObject{
    addData(recdata){
       let change = false;
       if( !(recdata instanceof Array)){
+         if( !(recdata instanceof RecArea) ){
+            recdata = new RecArea(recdata);
+         }
          recdata = [recdata];
       }
       recdata.forEach(function(area){
@@ -703,7 +726,7 @@ class Recreation{
    removeFromRoute(area){
       if(area.inRoute){
          area.setInRoute(false);
-         //do stuff with route here
+         state.route.removeRecArea(area);
       }
    }
 
