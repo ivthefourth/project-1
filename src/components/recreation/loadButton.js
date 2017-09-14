@@ -5,7 +5,11 @@ function showButton(status) {
    var text;
    var btn = $('<button class="btn center">')
       .text('Find Recreation')
-      .click(state.recreation.search);
+      .click(state.recreation.search)
+      .css({
+         display: 'block',
+         margin: '0 auto'
+      });
    var icon = $('<i class="material-icons pink-text text-accent3"></i>').text('warning');
 
    var noInterest = !state.interests.selected.length;
