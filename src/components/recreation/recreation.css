@@ -4,7 +4,7 @@
 
 .suggestionSummary {
     font-size: 1em;
-    margin-top: 15%;
+    margin-top: 5%;
 }
 
 .suggestionSummary:hover {
@@ -39,6 +39,6 @@
 
 #noneFound {
     text-align: center;
-    font-size: 16px;
+    font-size: 1em;
     margin-top: 5%;
 }
