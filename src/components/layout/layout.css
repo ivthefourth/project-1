@@ -78,3 +78,7 @@
 	margin-top: 0px;
 	padding: 0 15px;
 }
+
+.tabs {
+	overflow-x: hidden;
+}

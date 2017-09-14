@@ -234,12 +234,59 @@ class Route extends EventObject{
    addRecArea(area){
       this.shouldZoomMap = false;
       var areaLocation = new Location(area);
-      if( this.locationCount <= 1){
+      if( this.locationCount === 0){
          this.add(areaLocation);
+      }
+      if( this.locationCount <= 1){  
+         let origin = this.convertLocationForGoogle(areaLocation);
+         let destinations = [this.convertLocationForGoogle(this.path[0])]
+         var callback = function(response, status){
+            if(status === 'OK'){
+               if(response.rows[0].elements[0].status === 'ZERO_RESULTS'){
+                  area.setInRoute(false);
+                  Materialize.toast(
+                     'Could not add recreation area to route. Try adding it manually.'
+                  , 4000);
+               }
+               else{
+                  this.add(areaLocation);
+               }
+            }
+            else{
+               area.setInRoute(false);
+            }
+         }.bind(this);
+         distanceMatrix.getDistanceMatrix({
+            origins: [origin],
+            destinations: destinations,
+            travelMode: 'DRIVING'
+         }, callback);
       }
       else if( this.locationCount === 2){
          if(this.path[1].type === 'place'){
-            this.insert(areaLocation, 1);
+            let origin = this.convertLocationForGoogle(areaLocation);
+            let destinations = [this.convertLocationForGoogle(this.path[0])]
+            var callback = function(response, status){
+               if(status === 'OK'){
+                  if(response.rows[0].elements[0].status === 'ZERO_RESULTS'){
+                     area.setInRoute(false);
+                     Materialize.toast(
+                        'Could not add recreation area to route. Try adding it manually.'
+                     , 4000);
+                  }
+                  else{
+                     this.insert(areaLocation, 1);
+                  }
+               }
+               else{
+                  area.setInRoute(false);
+               }
+            }.bind(this);
+            distanceMatrix.getDistanceMatrix({
+               origins: [origin],
+               destinations: destinations,
+               travelMode: 'DRIVING'
+            }, callback);
          }
          else{
             //but what if path[0] is a recreation area??
@@ -250,6 +297,13 @@ class Route extends EventObject{
             ]
             var callback = function(response, status){
                if(status === 'OK'){
+                  if(response.rows[0].elements[1].status === 'ZERO_RESULTS'){
+                     area.setInRoute(false);
+                     Materialize.toast(
+                        'Could not add recreation area to route. Try adding it manually.'
+                     , 4000);
+                     return;
+                  }
                   if(
                      response.rows[0].elements[0].distance.value >
                      response.rows[0].elements[1].distance.value
@@ -280,6 +334,13 @@ class Route extends EventObject{
             if(status === 'OK'){
                let arr = response.rows[0].elements;
                let closestIndex = 0;
+               if(arr[0].status === 'ZERO_RESULTS'){
+                  area.setInRoute(false);
+                  Materialize.toast(
+                     'Could not add recreation area to route. Try adding it manually.'
+                  , 4000)
+                  return;
+               }
                let smallestDistance = arr[0].distance.value;
                for(let i = 1; i < arr.length; i++){
                   if( arr[i].distance.value < smallestDistance){
