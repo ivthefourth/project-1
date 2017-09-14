@@ -4,7 +4,7 @@
 
 .suggestionSummary {
     font-size: 1em;
-    margin-top: 15%;
+    margin-top: 5%;
 }
 
 .suggestionSummary:hover {
@@ -35,4 +35,10 @@
 .addressModal {
     margin-left: 5%;
 
+}
+
+#noneFound {
+    text-align: center;
+    font-size: 1em;
+    margin-top: 5%;
 }

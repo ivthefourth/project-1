@@ -43,14 +43,6 @@ $(document).ready(function() {
 
 	addChip();
 
-	state.interests.on('change', function(e) {
-		var interests = {};
-
-		e.val.selected.forEach(function(interest) {
-			interests[interest.id] = true;
-		});
-		localStorage.setItem('interests', JSON.stringify(interests));
-	});
 
 	$("#clear-interests").click(function() {
 	
@@ -60,35 +52,15 @@ $(document).ready(function() {
 		state.interests.emit('change');
 	});
 
-	state.route.on('change', function(e) {
-		var places_id = {};
-		var latitudeObj = {};
-		var longitudeObj = {};
-		var formattedNameObj = {};
-		var nameObj = {};
 
-		let i = 0;
-
-		e.val.forEach(function(f) {
-			places_id[i] = f.data.place_id;
-			latitudeObj[i] = f.data.geometry.location.lat();
-			longitudeObj[i] = f.data.geometry.location.lng();
-			formattedNameObj[i] = f.data.formatted_address;
-			nameObj[i] = f.data.name;
-			i++;
-		});
-		localStorage.setItem('places_id', JSON.stringify(places_id));
-		localStorage.setItem('latitude', JSON.stringify(latitudeObj));
-		localStorage.setItem('longitude', JSON.stringify(longitudeObj));
-		localStorage.setItem('formattedName', JSON.stringify(formattedNameObj));
-		localStorage.setItem('name', JSON.stringify(nameObj));
-
+	$('#tutorial-modal').modal({
+	  inDuration: 300,
+	  startingTop: '40%', // Starting top style attribute
+	  endingTop: '10%'
 	});
-	$(".destination-input").on('focus', function() {
-		if ($("#interests-header").hasClass('active')) {
-			$("#interests-header").click();
-		}
-	});
+
 });
+
+
 
 

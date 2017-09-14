@@ -1,16 +1,13 @@
 import state from '../state/state';
 
+
     export function displayRecAreaSummary(recdata, filteredType) {
         $(filteredType).empty();
 
-        // var breakDiv = "<div class=divider>";
-        // $(filteredType).append(breakDiv);
-
-        function telephoneCheck(strPhone){
+       function telephoneCheck(strPhone){
             // Check that the value we get is a phone number
             var isPhone = new RegExp(/^\+?1?\s*?\(?\d{3}|\w{3}(?:\)|[-|\s])?\s*?\d{3}|\w{3}[-|\s]?\d{4}|\w{4}$/);
             return isPhone.test(strPhone);
-            console.log("Phone # is: " + isPhone);
         }
 
         for (var i = 0; i <recdata.val.length; i++) {
@@ -45,26 +42,33 @@ import state from '../state/state';
             } else 
                 sugDivClass.append("<li card-content>");
 
-            // Check and see if the link array is empty or not and append if not
-            // if (recAreaUrl != null) {
-            //     sugDivClass.append(recAreaLinkP);
-            //     console.log("appending link");
-            // } else
-            // sugDivClass.append(recAreaLink);
-            //     console.log("NOT appending link");
-
-
             $(filteredType).append(sugDivClass);
 
             sugDivClass.click(recValAlias.showDetails);
+            
+            sugDivClass.hover(recValAlias.highlightMarker, recValAlias.unHighlightMarker);
+
+       }
+
+    if (recdata.val.length === 0){   
+         if (filteredType === "#filtered"){
+            $(filteredType).append("<div id='noneFound'>No recreation areas found.</div>");
+         } else if (filteredType === "#bookmarked") {
+            $(filteredType).append("<div style='text-align:center; margin:5%;' id='no-bookmark'>Nothing bookmarked.</div>");
         }
+     }
     }
 
+
+$(document).ready(function(){
+        $("#bookmarked").append("<div style='text-align:center; margin:5%;' id='no-bookmark'>Nothing bookmarked.</div>");
+});
 
 state.recreation.filtered.on("change",  function(recdata){
 
         var filteredType = "#filtered";
         displayRecAreaSummary(recdata, filteredType);
+
 });
 state.recreation.bookmarked.on("change", function(recdata){
 

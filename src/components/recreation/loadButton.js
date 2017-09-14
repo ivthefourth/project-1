@@ -5,7 +5,11 @@ function showButton(status) {
    var text;
    var btn = $('<button class="btn center">')
       .text('Find Recreation')
-      .click(state.recreation.search);
+      .click(state.recreation.search)
+      .css({
+         display: 'block',
+         margin: '0 auto'
+      });
    var icon = $('<i class="material-icons pink-text text-accent3"></i>').text('warning');
 
    var noInterest = !state.interests.selected.length;
@@ -25,6 +29,10 @@ function showButton(status) {
    else if(status.val.firstLoad){
       text = 'Click the button to get started'
       icon = null;
+      btn.addClass('pulse');
+      setTimeout(function(){
+         btn.removeClass('pulse');
+      }, 500);
    }
    else if(noInterest){
       text = 'Select at least one interest to search for recreation areas';
@@ -37,6 +45,10 @@ function showButton(status) {
    else{
       text = 'New recreation areas may be available.'
       icon = null;
+      btn.addClass('pulse');
+      setTimeout(function(){
+         btn.removeClass('pulse');
+      }, 500);
    }
 
    container.empty();
@@ -84,7 +96,7 @@ state.interests.on('change', function(e){
    }
 });
 
-//returns true if the area of A is contained in the area of B
+//returns true if the area of A is (mostly) contained in the area of B
 function isContained(arrA, radA, arrB, radB){
    let allContained = true;
    for (let i = 0; i < arrA.length && allContained; i++){
@@ -94,6 +106,12 @@ function isContained(arrA, radA, arrB, radB){
             arrA[i], arrB[j]);
          if(distance <= radB - radA){
             currentContained = true;
+         }
+         if(!currentContained && j < arrB.length - 1){
+            let d1 = distance;
+            let d2 = google.maps.geometry.spherical.computeDistanceBetween(
+            arrA[i], arrB[j + 1]);
+            currentContained = d1 < radB && d2 < radB;
          }
       }
       allContained = currentContained;
