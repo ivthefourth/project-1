@@ -63,20 +63,21 @@
          <ul class="collapsible" data-collapsible="expandable">
              <li>
                <div class="collapsible-header active">Suggestions</div>
+               <ul class="tabs">
+                      <li class="tab col s4"><a class="active make-green" href="#filtered-container">All</a></li>
+                      <li class="tab col s8"><a class ="make-green" href="#bookmarked">Bookmarked</a></li>
+                    </ul>
                <div class="collapsible-body" id="suggestions">
                    
-                   <ul class="tabs">
-                          <li class="tab col s4"><a class="active" href="#filtered-container">All</a></li>
-                          <li class="tab col s8"><a href="#bookmarked">Bookmarked</a></li>
-                        </ul>
+                   
                      
-                     <div class="row">
+                    <div class="row">
                       <div class="col s12">
                       <div id="filtered-container">
                         <div id="button-container"></div>
                         <div id="filtered"></div>
                       </div>
-                     <div id="bookmarked"></div>
+                    <div id="bookmarked"></div>
                   </div>
                </div>
              </li>
@@ -109,6 +110,25 @@
     <div class="modal-footer">
       <!-- <a href="#!" class="modal-action modal-close waves-effect btn btn-flat">Close</a> -->
       <a href="#!" class="oops btn">Do Not Press</a>
+    </div>
+  </div>
+
+  <div id="storage-modal" class="modal">
+    <div class="modal-content">
+      <h4>Continue Session?</h4>
+      <p>Welcome back! Do you want to continue your previous session or start a new one?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" id="new-session" class="modal-action waves-effect waves-green btn-flat">New Session</a>
+      <a href="#!" id="continue-session" class="modal-action waves-effect waves-green btn-flat">Continue Session</a>
+    </div>
+  </div>
+
+  <div id="directions-modal" class="modal">
+    <div class="modal-content">
+      <a href="#!" class="modal-action modal-close waves-effect fixed"><i class="material-icons">clear</i></a>
+      <h4>Directions</h4>
+      <div id="directions-container"></div>
     </div>
   </div>
 

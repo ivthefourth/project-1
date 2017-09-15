@@ -43,14 +43,6 @@ $(document).ready(function() {
 
 	addChip();
 
-	state.interests.on('change', function(e) {
-		var interests = {};
-
-		e.val.selected.forEach(function(interest) {
-			interests[interest.id] = true;
-		});
-		localStorage.setItem('interests', JSON.stringify(interests));
-	});
 
 	$("#clear-interests").click(function() {
 	
@@ -59,7 +51,22 @@ $(document).ready(function() {
 		});
 		state.interests.emit('change');
 	});
+	
+	$(".destination-input").on('focus', function() {
+ 		if ($("#interests-header").hasClass('active')) {
+ 			$("#interests-header").click();
+ 		}
+ 	});
+
+
+	$('#tutorial-modal').modal({
+	  inDuration: 300,
+	  startingTop: '40%', // Starting top style attribute
+	  endingTop: '10%'
+	});
 
 });
+
+
 
 

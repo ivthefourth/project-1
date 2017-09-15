@@ -123,7 +123,7 @@ class Interests extends EventObject{
 \*************/
 class Location{
    constructor(object){
-      if( object instanceof RecArea){
+      if( object.hasOwnProperty('RecAreaName')){
           this.type = 'recarea';
       }
       else if(object.hasOwnProperty('place_id')){
@@ -143,6 +143,7 @@ class Route extends EventObject{
    constructor(){
       super(['change']);
       this.path = [];
+      this.shouldZoomMap = true;
    }
    get locationCount(){
       return this.path.length;
@@ -190,12 +191,13 @@ class Route extends EventObject{
       }
    }
 
-   add(location){
+   add(location, dontEmit){
       if (!(location instanceof Location)){
          location = new Location(location);
       }
       this.path.push(location);
-      this.emit('change');
+      if( !dontEmit)
+         this.emit('change');
    }
    insert(location, index){
       if (!(location instanceof Location)){
@@ -220,15 +222,71 @@ class Route extends EventObject{
          this.emit('change');
       }
    }
+   setData(arr){
+      this.path = arr;
+      this.emit('change');
+   }
+
+   getLocationObject(location){
+      return new Location(location);
+   }
 
    addRecArea(area){
+      this.shouldZoomMap = false;
       var areaLocation = new Location(area);
-      if( this.locationCount === 1){
+      if( this.locationCount === 0){
          this.add(areaLocation);
+      }
+      if( this.locationCount <= 1){  
+         let origin = this.convertLocationForGoogle(areaLocation);
+         let destinations = [this.convertLocationForGoogle(this.path[0])]
+         var callback = function(response, status){
+            if(status === 'OK'){
+               if(response.rows[0].elements[0].status === 'ZERO_RESULTS'){
+                  area.setInRoute(false);
+                  Materialize.toast(
+                     'Could not add recreation area to route. Try adding it manually.'
+                  , 4000);
+               }
+               else{
+                  this.add(areaLocation);
+               }
+            }
+            else{
+               area.setInRoute(false);
+            }
+         }.bind(this);
+         distanceMatrix.getDistanceMatrix({
+            origins: [origin],
+            destinations: destinations,
+            travelMode: 'DRIVING'
+         }, callback);
       }
       else if( this.locationCount === 2){
          if(this.path[1].type === 'place'){
-            this.insert(areaLocation, 1);
+            let origin = this.convertLocationForGoogle(areaLocation);
+            let destinations = [this.convertLocationForGoogle(this.path[0])]
+            var callback = function(response, status){
+               if(status === 'OK'){
+                  if(response.rows[0].elements[0].status === 'ZERO_RESULTS'){
+                     area.setInRoute(false);
+                     Materialize.toast(
+                        'Could not add recreation area to route. Try adding it manually.'
+                     , 4000);
+                  }
+                  else{
+                     this.insert(areaLocation, 1);
+                  }
+               }
+               else{
+                  area.setInRoute(false);
+               }
+            }.bind(this);
+            distanceMatrix.getDistanceMatrix({
+               origins: [origin],
+               destinations: destinations,
+               travelMode: 'DRIVING'
+            }, callback);
          }
          else{
             //but what if path[0] is a recreation area??
@@ -239,6 +297,13 @@ class Route extends EventObject{
             ]
             var callback = function(response, status){
                if(status === 'OK'){
+                  if(response.rows[0].elements[1].status === 'ZERO_RESULTS'){
+                     area.setInRoute(false);
+                     Materialize.toast(
+                        'Could not add recreation area to route. Try adding it manually.'
+                     , 4000);
+                     return;
+                  }
                   if(
                      response.rows[0].elements[0].distance.value >
                      response.rows[0].elements[1].distance.value
@@ -269,6 +334,13 @@ class Route extends EventObject{
             if(status === 'OK'){
                let arr = response.rows[0].elements;
                let closestIndex = 0;
+               if(arr[0].status === 'ZERO_RESULTS'){
+                  area.setInRoute(false);
+                  Materialize.toast(
+                     'Could not add recreation area to route. Try adding it manually.'
+                  , 4000)
+                  return;
+               }
                let smallestDistance = arr[0].distance.value;
                for(let i = 1; i < arr.length; i++){
                   if( arr[i].distance.value < smallestDistance){
@@ -332,8 +404,8 @@ class Route extends EventObject{
       }
    }
    removeRecArea(area){
+      this.shouldZoomMap = false;
       for(let i = 0; i < this.path.length; i++){
-         console.log(this.path[i].data, area, this.path[i].data === area);
          if(this.path[i].data === area){
             this.remove(i);
             break;
@@ -484,7 +556,9 @@ class RecArea extends EventObject{
    }
    setInRoute(/*boolean*/ value){
       this.inRoute = value;
-      this.marker.setVisible(!value);
+      if(this.marker){
+         this.marker.setVisible(!value);
+      }
       this.emit('inroute');
    }
    //setFocus > change
@@ -559,6 +633,9 @@ class RecAreaCollection extends EventObject{
    addData(recdata){
       let change = false;
       if( !(recdata instanceof Array)){
+         if( !(recdata instanceof RecArea) ){
+            recdata = new RecArea(recdata);
+         }
          recdata = [recdata];
       }
       recdata.forEach(function(area){
@@ -873,8 +950,6 @@ class State extends EventObject{
 
 const state = new State;
 
-/* TEMPORARY, REMOVE LATER */
-window.state = state;
 
 export default state;
 

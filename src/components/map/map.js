@@ -7,6 +7,7 @@ const directionsDisplay = new google.maps.DirectionsRenderer();
 
 
 directionsDisplay.setMap(map);
+directionsDisplay.setPanel(document.getElementById('directions-container'));
 
 let routeMarkers = [];
 
@@ -20,12 +21,40 @@ state.route.on('change', function(e){
    // //add new markers
    if(state.route.locationCount === 1){
       directionsDisplay.set('directions', null);
-      map.fitBounds(e.val[0].data.geometry.viewport);
-      addMarker(e.val[0].data.geometry.location, 'route');
-      //update route with one location
-      state.map.directions.update(e.val[0].data.geometry.location);
+      if(state.route.path[0].data.geometry){
+         map.fitBounds(e.val[0].data.geometry.viewport);
+         addMarker(e.val[0].data.geometry.location, 'route');
+         //update route with one location
+         state.map.directions.update(e.val[0].data.geometry.location);
+      }
+      else if(state.route.path[0].data.RecAreaName){
+         let coords = new google.maps.LatLng({
+            lat: e.val[0].data.RecAreaLatitude,
+            lng: e.val[0].data.RecAreaLongitude
+         });
+         state.map.directions.update(coords);
+         map.setCenter(coords);
+         map.setZoom(8);
+         addMarker(coords, 'route');
+      }
+      else{
+         let coords = new google.maps.LatLng({
+            lat: e.val[0].data.lat,
+            lng: e.val[0].data.lng
+         });
+         state.map.directions.update(coords);
+         map.setCenter(coords);
+         map.setZoom(8);
+         addMarker(coords, 'route');
+      }
    }
    else if(state.route.locationCount){
+      if(state.route.shouldZoomMap){
+         directionsDisplay.set('preserveViewport', false);
+      }
+      else{
+         directionsDisplay.set('preserveViewport', true);
+      }
       //get directions
       let request = {
          origin: state.route.origin,
@@ -38,9 +67,9 @@ state.route.on('change', function(e){
          if (status == 'OK') {
             state.map.directions.update(result.routes[0]);
             directionsDisplay.setDirections(result);
-            console.log(result)
          }
          //else show some error toast?
+         state.route.shouldZoomMap = true;
       });
    }
    else{
@@ -113,6 +142,24 @@ map.addListener('idle', function(){
 })
 
 $(document).ready(function(){
+   $('#directions-modal').modal();
+   var directionsBtn = $('<a href="#">')
+   .append($('<i class="material-icons">').text('directions'))
+   .css({
+      'background-color': '#fff',
+      color: '#747474',
+      'border-radius': '2px',
+      margin: '10px',
+      padding: '0 3px',
+      height: '25px',
+      'line-height': '25px',
+      'box-shadow': 'rgba(0, 0, 0, 0.3) 0px 1px 4px -1px'
+   })
+   .click(function(){
+      $('#directions-modal').modal('open');
+   });
+   map.controls[google.maps.ControlPosition.TOP_CENTER].push(directionsBtn[0]);
+
    var slider = $('#radius-slider');
    var circles = [];
    slider.on('mousedown focus', function(){
