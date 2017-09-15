@@ -102,7 +102,6 @@ function getBookmarks(){
    if(hasLoaded) return;
    hasLoaded = true;
    $('#storage-modal').modal('close');
-   console.log('get bookmarks');
    let requestCount = 0;
    var bookmarked = JSON.parse(localStorage.getItem('bookmarked')) || [];
    var bookmarkCallback = function(response){
@@ -128,7 +127,6 @@ function getBookmarks(){
 var hasStorage = localStorage.getItem('has-stored') === 'true';
 var hasLoaded = false;
 if( hasStorage){
-   console.log('has storage');
    state.map.directions.on('change', getBookmarks);
 }
 
