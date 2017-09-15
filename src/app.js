@@ -5,3 +5,4 @@ import './components/layout/layout';
 import './components/map/map';
 import './components/route/route';
 import './components/localstorage/localstorage';
+import './components/finale/finale';
