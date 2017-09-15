@@ -406,7 +406,6 @@ class Route extends EventObject{
    removeRecArea(area){
       this.shouldZoomMap = false;
       for(let i = 0; i < this.path.length; i++){
-         console.log(this.path[i].data, area, this.path[i].data === area);
          if(this.path[i].data === area){
             this.remove(i);
             break;
@@ -951,8 +950,6 @@ class State extends EventObject{
 
 const state = new State;
 
-/* TEMPORARY, REMOVE LATER */
-window.state = state;
 
 export default state;
 

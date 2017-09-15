@@ -42,7 +42,6 @@ state.route.on('change', function(e){
             lat: e.val[0].data.lat,
             lng: e.val[0].data.lng
          });
-         console.log(e.val[0]);
          state.map.directions.update(coords);
          map.setCenter(coords);
          map.setZoom(8);
@@ -68,7 +67,6 @@ state.route.on('change', function(e){
          if (status == 'OK') {
             state.map.directions.update(result.routes[0]);
             directionsDisplay.setDirections(result);
-            console.log(result)
          }
          //else show some error toast?
          state.route.shouldZoomMap = true;

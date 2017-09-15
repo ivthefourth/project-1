@@ -116,7 +116,6 @@ function isContained(arrA, radA, arrB, radB){
       }
       allContained = currentContained;
    }
-   console.log(allContained ? 'IS CONTAINED' : 'NOT CONTAINED')
    return allContained;
 }
 
