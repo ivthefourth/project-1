@@ -333,7 +333,7 @@ class Route extends EventObject{
          var callback = function(response, status){
             if(status === 'OK'){
                let arr = response.rows[0].elements;
-               let closestIndex = 0;
+               let closestIndex = 1;
                if(arr[1].status === 'ZERO_RESULTS'){
                   area.setInRoute(false);
                   Materialize.toast(
