@@ -385,7 +385,7 @@ class Route extends EventObject{
                         arr[arr.length - 2].distance.value < 
                         response.rows[response.rows.length - 2].elements[arr.length - 1].distance.value
                      ){
-                        this.insert(areaLocation, closestIndex);
+                        this.insert(areaLocation, closestIndex - 1);
                      }
                      else{
                         this.add(areaLocation);
