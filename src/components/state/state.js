@@ -350,7 +350,7 @@ class Route extends EventObject{
                }
                //if it's closest to the starting location, 
                //insert it right after the starting location
-               if(closestIndex === 0){
+               if(closestIndex === 1){
                   this.insert(areaLocation, 1);
                }
                //otherwise, if it's not closest to the final location...
