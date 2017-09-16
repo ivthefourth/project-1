@@ -42,7 +42,6 @@ state.route.on('change', function(e){
             lat: e.val[0].data.lat,
             lng: e.val[0].data.lng
          });
-         console.log(e.val[0]);
          state.map.directions.update(coords);
          map.setCenter(coords);
          map.setZoom(8);
@@ -68,7 +67,6 @@ state.route.on('change', function(e){
          if (status == 'OK') {
             state.map.directions.update(result.routes[0]);
             directionsDisplay.setDirections(result);
-            console.log(result)
          }
          //else show some error toast?
          state.route.shouldZoomMap = true;
@@ -145,6 +143,22 @@ map.addListener('idle', function(){
 
 $(document).ready(function(){
    $('#directions-modal').modal();
+   var directionsBtn = $('<a href="#">')
+   .append($('<i class="material-icons">').text('directions'))
+   .css({
+      'background-color': '#fff',
+      color: '#747474',
+      'border-radius': '2px',
+      margin: '10px',
+      padding: '0 3px',
+      height: '25px',
+      'line-height': '25px',
+      'box-shadow': 'rgba(0, 0, 0, 0.3) 0px 1px 4px -1px'
+   })
+   .click(function(){
+      $('#directions-modal').modal('open');
+   });
+   map.controls[google.maps.ControlPosition.TOP_CENTER].push(directionsBtn[0]);
 
    var slider = $('#radius-slider');
    var circles = [];

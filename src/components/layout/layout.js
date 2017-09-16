@@ -51,6 +51,12 @@ $(document).ready(function() {
 		});
 		state.interests.emit('change');
 	});
+	
+	$(".destination-input").on('focus', function() {
+ 		if ($("#interests-header").hasClass('active')) {
+ 			$("#interests-header").click();
+ 		}
+ 	});
 
 	$('#tutorial-modal').modal({
 	  inDuration: 300,
