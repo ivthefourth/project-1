@@ -393,12 +393,15 @@ class Route extends EventObject{
                   }
                   //otherwise, insert it before the final destination
                   else{
-                     this.insert(areaLocation, this.locationCount - 1);;
+                     this.insert(areaLocation, this.locationCount - 1);
                   }
 
                }
             }
             else{
+               status === 'MAX_ELEMENTS_EXCEEDED' && Materialize.toast(
+                  'Too many locations in route. Try adding it manually.'
+               , 4000);
                area.setInRoute(false);
             }
          }.bind(this);
