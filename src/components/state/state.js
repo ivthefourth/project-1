@@ -333,15 +333,16 @@ class Route extends EventObject{
          var callback = function(response, status){
             if(status === 'OK'){
                let arr = response.rows[0].elements;
-               let closestIndex = 0;
-               if(arr[0].status === 'ZERO_RESULTS'){
+               let closestIndex = 1;
+               if(arr[1].status === 'ZERO_RESULTS'){
                   area.setInRoute(false);
                   Materialize.toast(
                      'Could not add recreation area to route. Try adding it manually.'
                   , 4000)
                   return;
                }
-               let smallestDistance = arr[0].distance.value;
+               //find route point this recarea is closest to
+               let smallestDistance = arr[1].distance.value;
                for(let i = 1; i < arr.length; i++){
                   if( arr[i].distance.value < smallestDistance){
                      closestIndex = i;
@@ -349,21 +350,26 @@ class Route extends EventObject{
                }
                //if it's closest to the starting location, 
                //insert it right after the starting location
-               if(closestIndex === 0){
+               if(closestIndex === 1){
                   this.insert(areaLocation, 1);
                }
                //otherwise, if it's not closest to the final location...
                else if(closestIndex !== arr.length - 1){
-                  //insert it between the location it's closest to and the 
-                  //next/previous location (whichever is closer)
+                  //insert it by the location it's closest to
+                  //B is closest to R, A is right before B, C is right after B
+                  let aToB = response.rows[closestIndex].elements[closestIndex - 1];
+                  let aToR = arr[closestIndex - 1];
+                  let rToB = smallestDistance;
+                  let bToC = response.rows[closestIndex].elements[closestIndex + 1];
+                  let bToR = rToB;
+                  let rToC = arr[closestIndex + 1];
                   if( 
-                     arr[closestIndex - 1].distance.value < 
-                     arr[closestIndex + 1].distance.value
+                     aToR + rToB + bToC < aToB + bToR + rToC
                   ){
-                     this.insert(areaLocation, closestIndex);
+                     this.insert(areaLocation, closestIndex - 1);
                   }
                   else{
-                     this.insert(areaLocation, closestIndex + 1);
+                     this.insert(areaLocation, closestIndex);
                   }
                }
                //otherwise, if it's closest to the last location
@@ -377,7 +383,7 @@ class Route extends EventObject{
                      //to last location and the last location
                      if(
                         arr[arr.length - 2].distance.value < 
-                        response.rows[1].elements[arr.length - 1].distance.value
+                        response.rows[response.rows.length - 2].elements[arr.length - 1].distance.value
                      ){
                         this.insert(areaLocation, closestIndex);
                      }
@@ -387,18 +393,21 @@ class Route extends EventObject{
                   }
                   //otherwise, insert it before the final destination
                   else{
-                     this.insert(areaLocation, this.locationCount - 1);;
+                     this.insert(areaLocation, this.locationCount - 1);
                   }
 
                }
             }
             else{
+               status === 'MAX_ELEMENTS_EXCEEDED' && Materialize.toast(
+                  'Too many locations in route. Try adding it manually.'
+               , 4000);
                area.setInRoute(false);
             }
          }.bind(this);
          distanceMatrix.getDistanceMatrix({
-            origins: [origin, destinations[destinations.length - 2]],
-            destinations: destinations,
+            origins: [origin, ...destinations],
+            destinations: [origin, ...destinations],
             travelMode: 'DRIVING'
          }, callback);
       }
@@ -954,63 +963,3 @@ const state = new State;
 export default state;
 
 
-//State Diagram
-
-
-// state = {
-//    setInterests: function(){},
-//    INTERESTS: {
-//       all: [{
-//          name: 'string',
-//          id: 'number',
-//          iconId: 'string',
-//          selected: 'boolean',
-//          toggle: function(){},
-//          on: function(eventString, callback){},
-//          events: {
-//             change: [ function(e){}, function(e){} ],
-//          },
-//          emit: function(eventString);// trigger event listeners for given event
-//       }, 
-//       {...}, 
-//       {...}],
-//       //returns an array of only selected interests (use getter)
-//       selected: [{...}, {...}],
-//       on: function(eventString, callback){},
-//       events: {
-//          change: [ function(){}, function(){} ],
-//       }
-//       emit: function(eventString);
-//       //might need to store activity ids we are including 
-//    },
-//    ROUTE: {
-//       addLocation: function(location, after){},
-//       deleteLocation: function(location){}, //maybe location.delete()??
-//       moveLocation: function(location, after), //maybe location.move()??
-//       ,//potentially invert direction
-//       ,//set options (e.g. avoid, search radius, transport type)
-//       ,//route array > has events
-//       ,// options object > has events 
-//    },
-//    MAP: {
-//       ,//
-//    },
-//    RECREATION: {
-//       addBookmark> adds bookmark and sets its bookmark property 
-//       addToRoute > similar to above
-//       ,//filteredSuggestions >has events
-//       ,//bookmarks
-//       ,//bookmark function
-//       ,//inRoute
-//       ,//add to route function
-//       ,//status
-//       ,//setLeg/location (A to B; just A; B to C??)
-//    },
-//    on: function(eventString, callback){},
-//    events: {
-//       ready: [ function(){}, function(){} ],
-//    }
-//    emit: function(eventString),
-//    //(checks local storage and updates data appropriately)
-//    init: function(){},
-// }
