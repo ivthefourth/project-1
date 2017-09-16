@@ -346,6 +346,7 @@ class Route extends EventObject{
                for(let i = 1; i < arr.length; i++){
                   if( arr[i].distance.value < smallestDistance){
                      closestIndex = i;
+                     smallestDistance = arr[i].distance.value;
                   }
                }
                //if it's closest to the starting location, 
