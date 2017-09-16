@@ -11,6 +11,7 @@ tooltip.tooltip({delay: 50});
 $(function() {
   $( ".sortable" ).sortable({
     revert: true, 
+    handle: '.moveInputDiv',
     stop: function() {
       var children = inputSection.children();
       var checker = 0;
