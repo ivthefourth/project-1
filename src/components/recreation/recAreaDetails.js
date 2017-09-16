@@ -12,7 +12,6 @@ var addRecToRoute;
 export function retrieveSingleRecArea(recarea) {
     $('#modal1-content').empty();
     // retrieve the data using recAreaId
-    console.log(recarea);
 
     // The recreation Area Title
     var recNameText = $("<div id='recNameModal'>").text(recarea.RecAreaName);
@@ -37,7 +36,6 @@ export function retrieveSingleRecArea(recarea) {
               // Check that the value we get is a phone number
                 var isPhone = new RegExp(/^\+?1?\s*?\(?\d{3}|\w{3}(?:\)|[-|\s])?\s*?\d{3}|\w{3}[-|\s]?\d{4}|\w{4}$/);
                 return isPhone.test(strPhone);
-                console.log("Phone # is: " + isPhone);
             }
 
     // Append the details of the recarea to the modal
@@ -88,11 +86,9 @@ export function retrieveSingleRecArea(recarea) {
     addRecToRoute = function() {
         if(recarea.inRoute === false) {
             state.recreation.addToRoute(recarea);
-            console.log("Add to the route");
         } else {
             $('#addToRouteBtn').text("Remove from Route");
             state.recreation.removeFromRoute(recarea);
-            console.log("Removed from route");
         }
     }
 
