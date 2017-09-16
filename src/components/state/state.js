@@ -357,12 +357,12 @@ class Route extends EventObject{
                else if(closestIndex !== arr.length - 1){
                   //insert it by the location it's closest to
                   //B is closest to R, A is right before B, C is right after B
-                  let aToB = response.rows[closestIndex].elements[closestIndex - 1];
-                  let aToR = arr[closestIndex - 1];
+                  let aToB = response.rows[closestIndex].elements[closestIndex - 1].distance.value;
+                  let aToR = arr[closestIndex - 1].distance.value;
                   let rToB = smallestDistance;
-                  let bToC = response.rows[closestIndex].elements[closestIndex + 1];
+                  let bToC = response.rows[closestIndex].elements[closestIndex + 1].distance.value;
                   let bToR = rToB;
-                  let rToC = arr[closestIndex + 1];
+                  let rToC = arr[closestIndex + 1].distance.value;
                   if( 
                      aToR + rToB + bToC < aToB + bToR + rToC
                   ){
