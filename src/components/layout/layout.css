@@ -6,6 +6,9 @@
    background: rebeccapurple;
 }
 
+.card {
+	cursor: pointer;
+}
 .chip {
 	background: #e8e8e8;
 	cursor: pointer;

@@ -58,7 +58,6 @@ $(document).ready(function() {
  		}
  	});
 
-
 	$('#tutorial-modal').modal({
 	  inDuration: 300,
 	  startingTop: '40%', // Starting top style attribute
