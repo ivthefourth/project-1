@@ -12,7 +12,6 @@ var addRecToRoute;
 export function retrieveSingleRecArea(recarea) {
     $('#modal1-content').empty();
     // retrieve the data using recAreaId
-    // console.log(recarea);
 
     // The recreation Area Title
     var recNameText = $("<div id='recNameModal'>").text(recarea.RecAreaName);
