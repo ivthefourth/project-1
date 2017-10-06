@@ -1,5 +1,7 @@
 # Rec Ninja
 
+**Archived as group project** [current version found here](https://github.com/ivthefourth/rec-ninja)
+
 [![Stories in Ready](https://badge.waffle.io/ivthefourth/project-1.svg?label=ready&title=Ready)](https://waffle.io/ivthefourth/project-1)
 
 
